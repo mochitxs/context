@@ -191,7 +191,7 @@ function FeaturedArticleSection() {
                             </h2>
                         </div>
 
-                        <a href="posts/view.php" className="featured-article-shell__link">
+                        <a href="articles/view.php" className="featured-article-shell__link">
                             Ver más
                             <span aria-hidden="true">→</span>
                         </a>

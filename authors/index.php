@@ -10,6 +10,7 @@ session_start();
     <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../assets/css/home.css">
     <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="../assets/css/section.css">
     <link rel="icon" type="image/png" href="../assets/images/favicon.png">
 </head>
 <body class="section-page">
