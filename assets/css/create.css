@@ -1,0 +1,342 @@
+/* =========================
+   CREATE PAGE
+   ========================= */
+
+   body.create-page {
+    min-height: 100vh;
+    color: #4b4b4b;
+    background-color: #f7f7f7;
+    background-image:
+        linear-gradient(to right, rgba(135, 171, 220, 0.65) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(135, 171, 220, 0.65) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+.create-page .main-header {
+    margin-top: 30px;
+}
+
+.create-layout {
+    width: min(760px, calc(100vw - 48px));
+    margin: 40px auto 100px;
+}
+
+.create-hero {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.create-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.2rem;
+    line-height: 0.92;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 12px;
+}
+
+.create-title span {
+    background: linear-gradient(to top, #ffc0e8 38%, transparent 38%);
+    padding: 0 10px;
+}
+
+.create-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: #6a6a6a;
+    font-weight: 400;
+}
+
+.create-card {
+    background: rgba(248, 248, 248, 0.88);
+    border: 1.5px solid #bdd0e8;
+    border-radius: 24px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    overflow: hidden;
+}
+
+/* Evita desbordes */
+.create-card,
+.create-form,
+.create-form__row,
+.create-form__group {
+    width: 100%;
+    min-width: 0;
+}
+
+.create-message {
+    margin-bottom: 18px;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #7a4d61;
+    background-color: #f9e7f1;
+    border: 1px solid #efbfd9;
+    padding: 12px 16px;
+    border-radius: 14px;
+}
+
+.create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.create-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.create-form__group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.create-form__group label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #6a6a6a;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.create-form__group input,
+.create-form__group select,
+.create-form__group textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    display: block;
+
+    border-radius: 16px;
+    border: 1.5px solid #bdd0e8;
+    background: rgba(255, 255, 255, 0.78);
+    padding: 14px 16px;
+    font-size: 1rem;
+    color: #4b4b4b;
+    outline: none;
+    box-shadow: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+}
+
+.create-form__group input[name="title"] {
+    font-size: 1.1rem;
+}
+
+.create-form__group textarea {
+    resize: vertical;
+    min-height: 260px;
+    border-radius: 18px;
+    line-height: 1.7;
+}
+
+.create-form__group input:focus,
+.create-form__group select:focus,
+.create-form__group textarea:focus {
+    border-color: #9fbde0;
+    box-shadow: 0 0 0 3px rgba(189, 208, 232, 0.18);
+}
+
+/* =========================
+   TYPE TOGGLE
+   ========================= */
+
+.type-toggle {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.type-toggle__option {
+    position: relative;
+    display: inline-block;
+}
+
+.type-toggle__option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.type-toggle__option span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 1.5px solid #bdd0e8;
+    background: rgba(255, 255, 255, 0.75);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.98rem;
+    font-weight: 500;
+    color: #4b4b4b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.type-toggle__option span:hover {
+    background: #f7fbff;
+    transform: translateY(-1px);
+}
+
+.type-toggle__option input:checked + span {
+    background: #ffbfe6;
+    border-color: #f9a3cf;
+    color: #4a4a4a;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   OPTIONAL FIELDS
+   ========================= */
+
+.create-form__optional {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 10px;
+    margin-top: 6px;
+    border-top: 1px solid rgba(189, 208, 232, 0.45);
+}
+
+/* =========================
+   FILE UPLOAD CUSTOM
+   ========================= */
+
+   .file-upload {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.file-upload__input {
+    display: none !important;
+}
+
+/* botón bonito :D */
+.file-upload__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 12px 18px;
+    border-radius: 999px;
+
+    border: 1.5px solid #bdd0e8;
+    background: rgba(255, 255, 255, 0.75);
+
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #4b4b4b;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+input[type="file"] {
+    display: none !important;
+}
+
+
+.file-upload__button:hover {
+    background: #f7fbff;
+    transform: translateY(-1px);
+}
+
+/* texto del archivo */
+.file-upload__text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: #6a6a6a;
+}
+/* =========================
+   ACTION BUTTONS
+   ========================= */
+
+.create-form__actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.btn-secondary {
+    display: inline-block;
+    text-decoration: none;
+    color: #4b4b4b;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.98rem;
+    background: rgba(255, 255, 255, 0.72);
+    padding: 12px 22px;
+    border: 1.5px solid #bdd0e8;
+    border-radius: 999px;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: #f0f6ff;
+    transform: translateY(-1px);
+}
+
+.create-submit {
+    border: 1.5px solid #f9a3cf;
+    border-radius: 999px;
+    background-color: #ffbfe6;
+    color: #4a4a4a;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    padding: 14px 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.10);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.create-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 768px) {
+    .create-layout {
+        width: calc(100vw - 32px);
+        margin-top: 32px;
+    }
+
+    .create-title {
+        font-size: 3.4rem;
+    }
+
+    .create-card {
+        padding: 20px;
+    }
+
+    .create-form__row {
+        grid-template-columns: 1fr;
+    }
+
+    .create-form__actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .create-submit,
+    .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+}

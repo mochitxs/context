@@ -1,0 +1,119 @@
+/* =========================
+   EXPLORE PAGE
+   ========================= */
+
+   body.explore-page {
+    min-height: 100vh;
+    background-color: #f7f7f7;
+
+   }
+
+/* Efecto FadeIn al cargar home*/
+@keyframes pageFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body.home-page,
+body.auth-page 
+body.explore-page{
+    animation: pageFadeIn 0.7s ease;
+}
+/* layout */
+.explore-layout {
+    width: min(1100px, calc(100vw - 80px));
+    margin: 60px auto 120px;
+}
+
+/* hero */
+.explore-hero {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.explore-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
+    font-weight: 800;
+    line-height: 0.9;
+    color: #000;
+}
+
+.explore-title span {
+    background: linear-gradient(to top, #ffc0e8 40%, transparent 40%);
+    padding: 0 10px;
+}
+
+.explore-subtitle {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: #5a5a5a;
+}
+
+/* cards */
+.explore-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px;
+}
+
+/* base card */
+.explore-card {
+    text-decoration: none;
+    color: inherit;
+
+    background: rgba(248, 248, 248, 0.9);
+    border: 1.5px solid #bdd0e8;
+    border-radius: 28px;
+
+    padding: 50px 30px;
+
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+
+    transition: all 0.25s ease;
+}
+
+.explore-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* contenido */
+.explore-card__inner h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.explore-card__inner p {
+    font-size: 1rem;
+    color: #5a5a5a;
+}
+
+/* diferenciación sutil */
+.explore-card--posts {
+    border-top: 6px solid #b5c597;
+}
+
+.explore-card--articles {
+    border-top: 6px solid #ffc0e8;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+    .explore-options {
+        grid-template-columns: 1fr;
+    }
+
+    .explore-title {
+        font-size: 3.8rem;
+    }
+}

@@ -1,0 +1,233 @@
+/* Estilo general de las páginas de autenticación */
+body.auth-page {
+    min-height: 100vh;
+    color: #4b4b4b;
+    background-color: #f7f7f7;
+
+    /* Grid azul de fondo */
+    background-image:
+        linear-gradient(to right, rgba(135, 171, 220, 0.65) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(135, 171, 220, 0.65) 1px, transparent 1px);
+    background-size: 40px 40px;
+
+    position: relative;
+}
+
+/* Botón superior derecho */
+.top-login-link {
+    position: absolute;
+    top: 36px;
+    right: 36px;
+
+    text-decoration: none;
+    color: #4b4b4b;
+    font-weight: 700;
+    font-size: 1.05rem;
+
+    background: #fcfcfc;
+    padding: 18px 26px;
+    border: 1.5px solid #bdd0e8;
+    border-radius: 999px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.10);
+
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.top-login-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Contenedor principal */
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Tarjeta del formulario */
+.auth-card {
+    width: 100%;
+    max-width: 580px;
+    background: #f8f8f8;
+    border: 1.5px solid #bdd0e8;
+    border-radius: 28px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    padding: 48px 50px 38px;
+}
+
+/* Encabezado */
+.auth-heading {
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+/* Título */
+.auth-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    line-height: 0.95;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.auth-title span {
+    background: linear-gradient(to top, #ffc0e8 38%, transparent 38%);
+    padding: 0 5px;
+}
+
+/* Subtítulo */
+.auth-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: #8a8a8a;
+}
+
+/* Mensajes */
+.auth-message {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #7a4d61;
+    background-color: #f9e7f1;
+    border: 1px solid #efbfd9;
+    padding: 12px 16px;
+    border-radius: 14px;
+}
+
+/* Formulario */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.auth-form label {
+    font-size: 0.98rem;
+    color: #5a5a5a;
+    margin-left: 12px;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 999px;
+    border: 1.5px solid #bdd0e8;
+    background-color: #fcfcfc;
+    font-size: 1rem;
+    outline: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.10);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 2px;
+}
+
+.auth-form input:focus {
+    border-color: #9fbde0;
+    box-shadow: 0 4px 10px rgba(157, 185, 221, 0.30);
+}
+
+/* Campo de contraseña con toggle */
+.password-field {
+    position: relative;
+    width: 100%;
+}
+
+.password-field input {
+    width: 100%;
+    padding: 11px 80px 11px 16px;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #6b6b6b;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 10px;
+}
+
+.toggle-password:hover {
+    color: #000;
+}
+
+/* Botón principal */
+.auth-button {
+    align-self: center;
+    margin-top: 28px;
+    padding: 14px 24px;
+    border: 1.5px solid #8d6c7d;
+    border-radius: 999px;
+    background-color: #ffbfe6;
+    color: #4b4b4b;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .top-login-link {
+        top: 20px;
+        right: 20px;
+        font-size: 0.95rem;
+        padding: 14px 20px;
+    }
+
+    .auth-card {
+        padding: 50px 28px 40px;
+    }
+
+    .auth-title {
+        font-size: 3rem;
+    }
+
+    .auth-subtitle {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-login-link {
+        position: static;
+        display: inline-block;
+        margin: 20px auto 0;
+    }
+
+    body.auth-page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .auth-wrapper {
+        width: 100%;
+        padding-top: 20px;
+    }
+
+    .auth-title {
+        font-size: 2.4rem;
+    }
+
+    .auth-form input {
+        font-size: 0.95rem;
+    }
+
+    .auth-button {
+        font-size: 1rem;
+    }
+}
