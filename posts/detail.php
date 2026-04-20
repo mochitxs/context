@@ -130,7 +130,8 @@ $sql = "
         posts.created_at,
         posts.type,
         categories.name AS category_name,
-        users.username AS author_name
+        users.username AS author_name,
+        users.profile_image
     FROM posts
     INNER JOIN categories ON posts.category_id = categories.id
     INNER JOIN users ON posts.user_id = users.id
@@ -198,10 +199,27 @@ if ($commentsEnabled) {
                 <h1 class="post-view-card__title">
                     <?php echo htmlspecialchars($post['title']); ?>
                 </h1>
+                <div class="post-detail-meta">
+                    <div class="content-author">
+                        <div class="content-author__avatar">
+                            <?php if (!empty($post['profile_image'])): ?>
+                                <img src="../<?php echo htmlspecialchars($post['profile_image']); ?>">
+                            <?php else: ?>
+                                <span><?php echo strtoupper(mb_substr($post['author_name'], 0, 1)); ?></span>
+                            <?php endif; ?>
+                        </div>
 
-                <p class="post-view-card__meta">
-                    Por <?php echo htmlspecialchars($post['author_name']); ?> · <?php echo htmlspecialchars($formattedDate); ?>
-                </p>
+                        <span class="content-author__name">
+                            <?php echo htmlspecialchars($post['author_name']); ?>
+                        </span>
+                    </div>
+
+                    <span class="post-detail-meta__separator">·</span>
+
+                    <span class="post-detail-meta__date">
+                        <?php echo htmlspecialchars(date('d/m/Y', strtotime($post['created_at']))); ?>
+                    </span>
+                </div>
             </header>
 
             <?php if (!empty($post['cover_image'])): ?>
@@ -262,16 +280,32 @@ if ($commentsEnabled) {
                     <div class="post-comments__list">
                         <?php foreach ($comments as $comment): ?>
                             <article class="post-comment">
-                                <header class="post-comment__header">
-                                    <div>
-                                        <p class="post-comment__author">
+                            <header class="post-comment__header">
+                                <div class="post-comment__author-block">
+                                    <div class="content-author">
+                                        <div class="content-author__avatar">
+                                            <?php if (!empty($comment['profile_image'])): ?>
+                                                <img
+                                                    src="../<?php echo htmlspecialchars($comment['profile_image']); ?>"
+                                                    alt="Foto de perfil de <?php echo htmlspecialchars($comment['username']); ?>"
+                                                >
+                                            <?php else: ?>
+                                                <span>
+                                                    <?php echo strtoupper(mb_substr($comment['username'], 0, 1)); ?>
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <span class="content-author__name">
                                             <?php echo htmlspecialchars($comment['username']); ?>
-                                        </p>
-                                        <p class="post-comment__date">
-                                            <?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($comment['created_at']))); ?>
-                                        </p>
+                                        </span>
                                     </div>
-                                </header>
+
+                                    <p class="post-comment__date">
+                                        <?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($comment['created_at']))); ?>
+                                    </p>
+                                </div>
+                            </header>
 
                                 <div class="post-comment__body">
                                     <?php echo ctx_render_paragraphs($comment['content']); ?>
@@ -296,16 +330,32 @@ if ($commentsEnabled) {
                                     <div class="post-comment__replies">
                                         <?php foreach ($comment['replies'] as $reply): ?>
                                             <article class="post-comment post-comment--reply">
-                                                <header class="post-comment__header">
-                                                    <div>
-                                                        <p class="post-comment__author">
+                                            <header class="post-comment__header">
+                                                <div class="post-comment__author-block">
+                                                    <div class="content-author">
+                                                        <div class="content-author__avatar">
+                                                            <?php if (!empty($reply['profile_image'])): ?>
+                                                                <img
+                                                                    src="../<?php echo htmlspecialchars($reply['profile_image']); ?>"
+                                                                    alt="Foto de perfil de <?php echo htmlspecialchars($reply['username']); ?>"
+                                                                >
+                                                            <?php else: ?>
+                                                                <span>
+                                                                    <?php echo strtoupper(mb_substr($reply['username'], 0, 1)); ?>
+                                                                </span>
+                                                            <?php endif; ?>
+                                                        </div>
+
+                                                        <span class="content-author__name">
                                                             <?php echo htmlspecialchars($reply['username']); ?>
-                                                        </p>
-                                                        <p class="post-comment__date">
-                                                            <?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($reply['created_at']))); ?>
-                                                        </p>
+                                                        </span>
                                                     </div>
-                                                </header>
+
+                                                    <p class="post-comment__date">
+                                                        <?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($reply['created_at']))); ?>
+                                                    </p>
+                                                </div>
+                                            </header>
 
                                                 <div class="post-comment__body">
                                                     <?php echo ctx_render_paragraphs($reply['content']); ?>

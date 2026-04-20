@@ -179,7 +179,8 @@ function ctx_fetch_post_comments(PDO $pdo, int $postId): array
             comments.parent_comment_id,
             comments.content,
             comments.created_at,
-            users.username
+            users.username,
+            users.profile_image
         FROM comments
         INNER JOIN users ON comments.user_id = users.id
         WHERE comments.post_id = ?

@@ -35,13 +35,16 @@ if (isset($_SESSION['user_id'], $pdo) && $pdo instanceof PDO) {
                 Hola, <?php echo htmlspecialchars($_SESSION["username"]); ?>
             </span>
 
-            <a href="<?php echo htmlspecialchars(ctx_url('settings/index.php?view=notifications')); ?>" class="header-pill-link">
-                Notificaciones
+            <a href="<?php echo htmlspecialchars(ctx_url('settings/index.php')); ?>" class="header-user-button" aria-label="Abrir ajustes de usuario">
+                <img
+                    src="<?php echo htmlspecialchars(ctx_url('assets/images/user.png')); ?>"
+                    alt="Usuario"
+                    class="header-user-button__icon"
+                >
                 <?php if ($unreadNotificationsCount > 0): ?>
-                    <span class="header-pill-link__count"><?php echo $unreadNotificationsCount; ?></span>
+                    <span class="header-user-button__count"><?php echo $unreadNotificationsCount; ?></span>
                 <?php endif; ?>
             </a>
-            <a href="<?php echo htmlspecialchars(ctx_url('settings/index.php')); ?>" class="header-pill-link">Ajustes</a>
             <a href="<?php echo htmlspecialchars(ctx_url('posts/create.php')); ?>" class="create-button">+ Crea</a>
             <a href="<?php echo htmlspecialchars(ctx_url('auth/logout.php')); ?>" class="logout-link">Salir</a>
 

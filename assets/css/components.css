@@ -56,6 +56,49 @@
     padding: 0 6px;
 }
 
+.header-user-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(189, 208, 232, 0.85);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.header-user-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.header-user-button__icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.header-user-button__count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    display: inline-flex;
+    min-width: 24px;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #f2b7d8;
+    color: #202020;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0 6px;
+    border: 1px solid #ffffff;
+}
+
 /* =========================
    CATEGORY COLORS
    ========================= */
