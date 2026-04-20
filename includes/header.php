@@ -4,6 +4,16 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/functions.php';
+
+$unreadNotificationsCount = 0;
+
+if (isset($_SESSION['user_id'], $pdo) && $pdo instanceof PDO) {
+    try {
+        $unreadNotificationsCount = ctx_get_unread_notifications_count($pdo, (int) $_SESSION['user_id']);
+    } catch (Throwable $exception) {
+        $unreadNotificationsCount = 0;
+    }
+}
 ?>
 
 <header class="main-header">
@@ -25,6 +35,13 @@ require_once __DIR__ . '/functions.php';
                 Hola, <?php echo htmlspecialchars($_SESSION["username"]); ?>
             </span>
 
+            <a href="<?php echo htmlspecialchars(ctx_url('settings/index.php?view=notifications')); ?>" class="header-pill-link">
+                Notificaciones
+                <?php if ($unreadNotificationsCount > 0): ?>
+                    <span class="header-pill-link__count"><?php echo $unreadNotificationsCount; ?></span>
+                <?php endif; ?>
+            </a>
+            <a href="<?php echo htmlspecialchars(ctx_url('settings/index.php')); ?>" class="header-pill-link">Ajustes</a>
             <a href="<?php echo htmlspecialchars(ctx_url('posts/create.php')); ?>" class="create-button">+ Crea</a>
             <a href="<?php echo htmlspecialchars(ctx_url('auth/logout.php')); ?>" class="logout-link">Salir</a>
 

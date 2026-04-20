@@ -75,6 +75,10 @@ if (
             }
 
             if ($commentMessage === '') {
+                $postOwnerStmt = $pdo->prepare("SELECT user_id, title FROM posts WHERE id = ? LIMIT 1");
+                $postOwnerStmt->execute([$postId]);
+                $postOwner = $postOwnerStmt->fetch(PDO::FETCH_ASSOC);
+
                 $insertQuery = "
                     INSERT INTO comments (
                         post_id,
@@ -91,6 +95,20 @@ if (
                     $parentCommentId,
                     $content
                 ]);
+
+                $newCommentId = (int) $pdo->lastInsertId();
+
+                if ($postOwner && (int) $postOwner['user_id'] !== (int) $_SESSION['user_id']) {
+                    ctx_create_notification(
+                        $pdo,
+                        (int) $postOwner['user_id'],
+                        (int) $_SESSION['user_id'],
+                        $postId,
+                        $newCommentId,
+                        'comment',
+                        $_SESSION['username'] . ' ha comentado en tu post "' . $postOwner['title'] . '".'
+                    );
+                }
 
                 header('Location: detail.php?id=' . $postId . '#comments');
                 exit;

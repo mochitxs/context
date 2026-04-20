@@ -100,6 +100,14 @@ foreach ($articleGroups as &$group) {
 }
 unset($group);
 
+$articlesCountStmt = $pdo->query("
+    SELECT COUNT(*) 
+    FROM posts
+    WHERE status = 'published'
+      AND type = 'article'
+");
+$articlesCount = (int) $articlesCountStmt->fetchColumn();
+
 /**
  * Solo mostramos grupos que tengan contenido publicado.
  * Así evitamos enseñar bloques vacíos cuando todavía hay pocos artículos.
@@ -131,18 +139,15 @@ $visibleArticleGroups = array_values(array_filter(
 <main class="articles-view-layout">
     <div
         data-react-listing-summary
-        data-total="<?php echo count($visibleArticleGroups); ?>"
-        data-label="secciones"
-        data-description="artículos agrupados por universos temáticos y ordenados con lógica editorial."
+        data-total="<?php echo $articlesCount; ?>"
+        data-label="artículos"
+        data-description=""
     ></div>
 
     <section class="articles-view-hero">
         <h1 class="articles-view-title">
             <span>artículos;</span>
         </h1>
-        <p class="articles-view-subtitle">
-            piezas editoriales agrupadas por universos temáticos.
-        </p>
     </section>
 
     <?php if (empty($visibleArticleGroups)): ?>

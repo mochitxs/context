@@ -3,8 +3,12 @@
  */
 
 function ListingSummaryCard({ label, total, description }) {
+    const wrapperClassName = description
+        ? "mb-14 border-b border-[rgba(75,75,75,0.35)] pb-3"
+        : "mb-8";
+
     return (
-        <section className="mb-14 border-b border-[rgba(75,75,75,0.35)] pb-3">
+        <section className={wrapperClassName}>
         <div className="mx-auto w-[min(1120px,calc(100vw-48px))] px-1">
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -13,11 +17,11 @@ function ListingSummaryCard({ label, total, description }) {
                         {description}
                     </p>
                 ) : (
-                    <div></div>
+                    <div className="hidden sm:block"></div>
                 )}
 
                 <div className="flex items-center gap-3 shrink-0">
-                    <span className="font-['Playfair_Display'] text-[1rem] font-bold text-[#111]">
+                    <span className="font-['Inter'] text-[0.9rem]  text-[#111]">
                         {label}
                     </span>
 

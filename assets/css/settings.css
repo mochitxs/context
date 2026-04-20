@@ -1,0 +1,228 @@
+body.section-page {
+    min-height: 100vh;
+}
+
+.settings-layout {
+    width: min(1380px, calc(100vw - 40px));
+    margin: 30px auto 100px;
+}
+
+.settings-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    line-height: 0.96;
+    color: #000;
+    margin-bottom: 18px;
+}
+
+.settings-title span,
+.settings-section-title span {
+    background: linear-gradient(to top, #d4dbff 36%, transparent 36%);
+    padding: 0 6px 0 2px;
+}
+
+.settings-message {
+    margin-bottom: 18px;
+    padding: 12px 16px;
+    border-radius: 18px;
+    background: #fcfcfc;
+    border: 1px solid #bdd0e8;
+}
+
+.settings-message--success {
+    background: #f5fbf2;
+    border-color: #c8dfaa;
+}
+
+.settings-message--error {
+    background: #fff3f6;
+    border-color: #f2c2d4;
+}
+
+.settings-panel {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+}
+
+.settings-sidebar,
+.settings-content {
+    background: rgba(248, 248, 248, 0.95);
+    border: 1.5px solid #bdd0e8;
+    border-radius: 28px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.settings-sidebar {
+    padding: 28px 20px;
+}
+
+.settings-sidebar h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    margin-bottom: 14px;
+}
+
+.settings-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.settings-nav a {
+    text-decoration: none;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: #111;
+}
+
+.settings-nav a.is-active {
+    color: #a55f92;
+}
+
+.settings-content {
+    padding: 28px 28px 34px;
+}
+
+.settings-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    line-height: 0.96;
+    color: #000;
+    margin-bottom: 20px;
+}
+
+.settings-content-list,
+.settings-comments-list,
+.settings-notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.settings-content-card,
+.settings-comment-card,
+.settings-notification-card,
+.settings-profile-card {
+    background: #fff;
+    border: 1.5px solid #bdd0e8;
+    border-radius: 24px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.07);
+    padding: 20px 22px;
+}
+
+.settings-content-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #111;
+}
+
+.settings-content-card p {
+    line-height: 1.5;
+    color: #555;
+}
+
+.settings-content-card__actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.settings-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1.5px solid #bdd0e8;
+    background: #fcfcfc;
+    color: #4b4b4b;
+    text-decoration: none;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.settings-button--danger {
+    background: #f4b4df;
+}
+
+.settings-button--ghost {
+    background: #fff;
+}
+
+.settings-profile-card {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 20px;
+    align-items: center;
+}
+
+.settings-profile-card__avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 26px;
+    background: #f7f1f6;
+    border: 1.5px solid #bdd0e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+}
+
+.settings-profile-card__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.settings-profile-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.settings-profile-card__form {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.settings-comment-card__post a {
+    color: #4e6081;
+    font-weight: 700;
+}
+
+.settings-comment-card__body,
+.settings-notification-card p {
+    line-height: 1.6;
+}
+
+.settings-comment-card__body p + p {
+    margin-top: 12px;
+}
+
+.settings-comment-card__date {
+    margin-top: 10px;
+    color: #7a7a7a;
+    font-size: 0.9rem;
+}
+
+.settings-empty {
+    padding: 18px 0;
+    color: #666;
+}
+
+@media (max-width: 980px) {
+    .settings-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-profile-card {
+        grid-template-columns: 1fr;
+    }
+}

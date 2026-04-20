@@ -212,3 +212,111 @@ function ctx_fetch_post_comments(PDO $pdo, int $postId): array
 
     return array_values($topLevel);
 }
+
+/**
+ * Asegura la columna de foto de perfil en usuarios.
+ *
+ * @param PDO $pdo Conexión activa.
+ * @return void
+ */
+function ctx_ensure_user_profile_column(PDO $pdo): void
+{
+    $columnsStmt = $pdo->query("SHOW COLUMNS FROM users");
+    $columns = array_column($columnsStmt->fetchAll(PDO::FETCH_ASSOC), 'Field');
+
+    if (!in_array('profile_image', $columns, true)) {
+        $pdo->exec("ALTER TABLE users ADD COLUMN profile_image VARCHAR(255) NULL AFTER role");
+    }
+}
+
+/**
+ * Asegura la tabla de notificaciones.
+ *
+ * @param PDO $pdo Conexión activa.
+ * @return void
+ */
+function ctx_ensure_notifications_table(PDO $pdo): void
+{
+    $sql = "
+        CREATE TABLE IF NOT EXISTS notifications (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            actor_user_id INT NULL,
+            post_id INT NULL,
+            comment_id INT NULL,
+            type VARCHAR(50) NOT NULL DEFAULT 'comment',
+            message VARCHAR(255) NOT NULL,
+            is_read TINYINT(1) NOT NULL DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_notifications_user_id (user_id),
+            INDEX idx_notifications_is_read (is_read)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ";
+
+    $pdo->exec($sql);
+}
+
+/**
+ * Devuelve el número de notificaciones no leídas de un usuario.
+ *
+ * @param PDO $pdo Conexión activa.
+ * @param int $userId Usuario destino.
+ * @return int Número de notificaciones sin leer.
+ */
+function ctx_get_unread_notifications_count(PDO $pdo, int $userId): int
+{
+    ctx_ensure_notifications_table($pdo);
+
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*)
+        FROM notifications
+        WHERE user_id = ? AND is_read = 0
+    ");
+    $stmt->execute([$userId]);
+
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * Genera una notificación simple.
+ *
+ * @param PDO $pdo Conexión activa.
+ * @param int $userId Destinatario.
+ * @param int|null $actorUserId Usuario que provoca la acción.
+ * @param int|null $postId Post relacionado.
+ * @param int|null $commentId Comentario relacionado.
+ * @param string $type Tipo de notificación.
+ * @param string $message Texto visible de la notificación.
+ * @return void
+ */
+function ctx_create_notification(
+    PDO $pdo,
+    int $userId,
+    ?int $actorUserId,
+    ?int $postId,
+    ?int $commentId,
+    string $type,
+    string $message
+): void {
+    ctx_ensure_notifications_table($pdo);
+
+    $stmt = $pdo->prepare("
+        INSERT INTO notifications (
+            user_id,
+            actor_user_id,
+            post_id,
+            comment_id,
+            type,
+            message
+        ) VALUES (?, ?, ?, ?, ?, ?)
+    ");
+
+    $stmt->execute([
+        $userId,
+        $actorUserId,
+        $postId,
+        $commentId,
+        $type,
+        $message
+    ]);
+}
