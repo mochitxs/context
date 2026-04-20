@@ -7,13 +7,5 @@ CREATE TABLE IF NOT EXISTS comments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_comments_post_id (post_id),
     INDEX idx_comments_parent_id (parent_comment_id),
-    CONSTRAINT fk_comments_post
-        FOREIGN KEY (post_id) REFERENCES posts(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_comments_user
-        FOREIGN KEY (user_id) REFERENCES users(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_comments_parent
-        FOREIGN KEY (parent_comment_id) REFERENCES comments(id)
-        ON DELETE CASCADE
+    INDEX idx_comments_user_id (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

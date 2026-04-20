@@ -132,6 +132,7 @@ if (!$post) {
 
 $formattedDate = date('d/m/Y', strtotime($post['created_at']));
 $comments = [];
+$commentSetupHint = '';
 
 if ($commentsEnabled) {
     try {
@@ -139,8 +140,9 @@ if ($commentsEnabled) {
     } catch (Throwable $exception) {
         $comments = [];
         $commentsEnabled = false;
-        $commentMessage = 'No se pudieron cargar los comentarios de este post.';
+        $commentMessage = 'Los comentarios aún no están listos en la base de datos.';
         $commentMessageType = 'error';
+        $commentSetupHint = $exception->getMessage();
     }
 }
 ?>
@@ -211,6 +213,12 @@ if ($commentsEnabled) {
                 <?php if ($commentMessage !== ''): ?>
                     <p class="post-comments__message post-comments__message--<?php echo htmlspecialchars($commentMessageType); ?>">
                         <?php echo htmlspecialchars($commentMessage); ?>
+                    </p>
+                <?php endif; ?>
+
+                <?php if ($commentSetupHint !== ''): ?>
+                    <p class="post-comments__message post-comments__message--hint">
+                        Detalle técnico: <?php echo htmlspecialchars($commentSetupHint); ?>
                     </p>
                 <?php endif; ?>
 

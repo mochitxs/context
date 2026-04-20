@@ -117,19 +117,49 @@ function ctx_ensure_comments_table(PDO $pdo): void
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_comments_post_id (post_id),
             INDEX idx_comments_parent_id (parent_comment_id),
-            CONSTRAINT fk_comments_post
-                FOREIGN KEY (post_id) REFERENCES posts(id)
-                ON DELETE CASCADE,
-            CONSTRAINT fk_comments_user
-                FOREIGN KEY (user_id) REFERENCES users(id)
-                ON DELETE CASCADE,
-            CONSTRAINT fk_comments_parent
-                FOREIGN KEY (parent_comment_id) REFERENCES comments(id)
-                ON DELETE CASCADE
+            INDEX idx_comments_user_id (user_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ";
 
     $pdo->exec($sql);
+
+    /**
+     * Si la tabla ya existía de antes, nos aseguramos de que tenga la
+     * estructura necesaria para respuestas de un solo nivel.
+     */
+    $existingColumns = [];
+    $columnsStmt = $pdo->query("SHOW COLUMNS FROM comments");
+
+    foreach ($columnsStmt->fetchAll(PDO::FETCH_ASSOC) as $column) {
+        $existingColumns[] = $column['Field'];
+    }
+
+    if (!in_array('parent_comment_id', $existingColumns, true)) {
+        $pdo->exec("ALTER TABLE comments ADD COLUMN parent_comment_id INT NULL AFTER user_id");
+    }
+
+    if (!in_array('created_at', $existingColumns, true)) {
+        $pdo->exec("ALTER TABLE comments ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER content");
+    }
+
+    $indexesStmt = $pdo->query("SHOW INDEX FROM comments");
+    $existingIndexes = [];
+
+    foreach ($indexesStmt->fetchAll(PDO::FETCH_ASSOC) as $index) {
+        $existingIndexes[] = $index['Key_name'];
+    }
+
+    if (!in_array('idx_comments_post_id', $existingIndexes, true)) {
+        $pdo->exec("ALTER TABLE comments ADD INDEX idx_comments_post_id (post_id)");
+    }
+
+    if (!in_array('idx_comments_parent_id', $existingIndexes, true)) {
+        $pdo->exec("ALTER TABLE comments ADD INDEX idx_comments_parent_id (parent_comment_id)");
+    }
+
+    if (!in_array('idx_comments_user_id', $existingIndexes, true)) {
+        $pdo->exec("ALTER TABLE comments ADD INDEX idx_comments_user_id (user_id)");
+    }
 }
 
 /**

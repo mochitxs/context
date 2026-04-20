@@ -289,6 +289,13 @@ body.post-view-page {
     color: #7a4d61;
 }
 
+.post-comments__message--hint {
+    background: #f6faff;
+    border-color: #cfe0f8;
+    color: #556171;
+    font-size: 0.9rem;
+}
+
 .post-comments__hint a {
     color: #4e6081;
     font-weight: 700;

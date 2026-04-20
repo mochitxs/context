@@ -4,11 +4,17 @@
 
 function ListingSummaryCard({ label, total, description }) {
     return (
-        <section className="mb-12 border-b border-[rgba(75,75,75,0.35)] pb-3">
+        <section className="mb-14 border-b border-[rgba(75,75,75,0.35)] pb-3">
+        <div className="mx-auto w-[min(1120px,calc(100vw-48px))] px-1">
+
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="m-0 font-['Playfair_Display'] text-[1rem] italic leading-[1.3] text-[#5d5d5d]">
-                    {description}
-                </p>
+                {description ? (
+                    <p className="m-0 font-['Playfair_Display'] text-[1rem] italic leading-[1.3] text-[#5d5d5d]">
+                        {description}
+                    </p>
+                ) : (
+                    <div></div>
+                )}
 
                 <div className="flex items-center gap-3 shrink-0">
                     <span className="font-['Playfair_Display'] text-[1rem] font-bold text-[#111]">
@@ -19,6 +25,7 @@ function ListingSummaryCard({ label, total, description }) {
                         {total}
                     </span>
                 </div>
+            </div>
             </div>
         </section>
     );

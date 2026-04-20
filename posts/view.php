@@ -50,7 +50,7 @@ $postsCount = count($posts);
             data-react-listing-summary
             data-total="<?php echo (int) $postsCount; ?>"
             data-label="posts"
-            data-description="pensamientos breves, multimedia y pequeñas piezas compartidas por la comunidad."
+            data-description=""
         ></div>
 
         <section class="posts-view-grid">

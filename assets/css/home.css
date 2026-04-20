@@ -310,7 +310,10 @@ body.auth-page {
    ========================= */
 
 .featured-article-section {
-    padding: 0 0 120px;
+    margin-top: 24px;
+    padding: 28px 0 120px;
+    background: #fbfbfb;
+    box-shadow: inset 0 1px 0 rgba(189, 208, 232, 0.55);
 }
 
 .featured-article-shell {
