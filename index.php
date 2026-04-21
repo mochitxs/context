@@ -4,6 +4,58 @@
  */
 session_start();
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/config/db.php';
+
+$randomFeaturedArticle = null;
+
+try {
+    /**
+     * Elegimos un artículo publicado de forma determinista por día.
+     *
+     * Así el bloque "Artículo del día" se mantiene estable durante toda la
+     * jornada, pero cambia automáticamente al día siguiente.
+     *
+     * En lugar de usar un aleatorio puro, calculamos una rotación diaria
+     * sobre todos los artículos publicados. Así el comportamiento es más
+     * fácil de comprobar y de explicar en la presentación final.
+     */
+    $todayInMadrid = new DateTimeImmutable('now', new DateTimeZone('Europe/Madrid'));
+    $articlesCountStmt = $pdo->query("
+        SELECT COUNT(*)
+        FROM posts
+        WHERE status = 'published'
+          AND type = 'article'
+    ");
+    $articlesCount = (int) $articlesCountStmt->fetchColumn();
+
+    if ($articlesCount > 0) {
+        $dayNumber = (((int) $todayInMadrid->format('Y')) * 366) + ((int) $todayInMadrid->format('z'));
+        $dailyOffset = $dayNumber % $articlesCount;
+
+        $featuredArticleStmt = $pdo->prepare("
+            SELECT
+                posts.id,
+                posts.title,
+                posts.created_at,
+                posts.cover_image,
+                categories.name AS category_name,
+                users.username AS author_name
+            FROM posts
+            INNER JOIN categories ON posts.category_id = categories.id
+            INNER JOIN users ON posts.user_id = users.id
+            WHERE posts.status = 'published'
+              AND posts.type = 'article'
+            ORDER BY posts.created_at DESC, posts.id DESC
+            LIMIT 1 OFFSET :daily_offset
+        ");
+        $featuredArticleStmt->bindValue(':daily_offset', $dailyOffset, PDO::PARAM_INT);
+        $featuredArticleStmt->execute();
+
+        $randomFeaturedArticle = $featuredArticleStmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+} catch (Throwable $exception) {
+    $randomFeaturedArticle = null;
+}
 ?>
 
 <!DOCTYPE html>
@@ -72,6 +124,25 @@ require_once __DIR__ . '/includes/functions.php';
         </section>
 
     </main>
+
+    <script>
+        window.CONTEXT_HOME_DATA = {
+            featuredArticle: <?php echo json_encode(
+                $randomFeaturedArticle ? [
+                    'headline' => $randomFeaturedArticle['title'],
+                    'author' => $randomFeaturedArticle['author_name'],
+                    'date' => date('d / m / Y', strtotime($randomFeaturedArticle['created_at'])),
+                    'categoryPills' => [$randomFeaturedArticle['category_name']],
+                    'imageAlt' => 'Imagen del artículo del día',
+                    'imageSrc' => !empty($randomFeaturedArticle['cover_image'])
+                        ? $randomFeaturedArticle['cover_image']
+                        : 'assets/images/clean_girl.jpeg',
+                    'detailUrl' => 'articles/detail.php?id=' . (int) $randomFeaturedArticle['id']
+                ] : null,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            ); ?>
+        };
+    </script>
 
     <!-- React App -->
     <script type="text/babel" src="assets/js/home-app.js"></script>

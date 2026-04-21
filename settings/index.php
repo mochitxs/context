@@ -33,7 +33,7 @@ $messageType = 'info';
  * Carga datos básicos del usuario autenticado.
  */
 $userStmt = $pdo->prepare("
-    SELECT id, username, email, role, profile_image
+    SELECT id, username, email, role, profile_image, bio
     FROM users
     WHERE id = ?
     LIMIT 1
@@ -90,6 +90,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = 'Selecciona una imagen antes de guardar.';
             $messageType = 'error';
         }
+
+        $activeView = 'profile';
+    }
+
+    if ($action === 'update_profile_info') {
+        $bio = trim($_POST['bio'] ?? '');
+
+        $updateStmt = $pdo->prepare("
+            UPDATE users
+            SET bio = ?
+            WHERE id = ?
+        ");
+        $updateStmt->execute([$bio, $userId]);
+
+        $user['bio'] = $bio;
+        $message = 'Descripción actualizada.';
+        $messageType = 'success';
         $activeView = 'profile';
     }
 
@@ -189,7 +206,7 @@ function renderOwnContentCards(array $items, string $type): void
 
         $deleteAction = $type === 'article' ? 'delete_article' : 'delete_post';
         ?>
-        <article class="settings-content-card fade-in-up">
+        <article class="settings-content-card">
             <h3><?php echo htmlspecialchars($item['title']); ?></h3>
             <p><?php echo htmlspecialchars(ctx_excerpt($item['content'], 220)); ?></p>
             <div class="settings-content-card__actions">
@@ -222,7 +239,7 @@ function renderOwnContentCards(array $items, string $type): void
 
 <?php require_once __DIR__ . '/../includes/header.php'; ?>
 
-<main class="settings-layout fade-in-up">
+<main class="settings-layout">
     <h1 class="settings-title"><span>ajustes;</span></h1>
 
     <?php if ($message !== ''): ?>
@@ -244,7 +261,7 @@ function renderOwnContentCards(array $items, string $type): void
 
             <h2>usuario</h2>
             <nav class="settings-nav">
-                <a class="<?php echo $activeView === 'profile' ? 'is-active' : ''; ?>" href="?view=profile">foto de usuario</a>
+                <a class="<?php echo $activeView === 'profile' ? 'is-active' : ''; ?>" href="?view=profile">perfil</a>
                 <a class="<?php echo $activeView === 'comments' ? 'is-active' : ''; ?>" href="?view=comments">mis comentarios</a>
             </nav>
         </aside>
@@ -295,6 +312,20 @@ function renderOwnContentCards(array $items, string $type): void
                         <button type="submit" class="settings-button">Guardar foto</button>
                     </form>
                 </div>
+                <form method="POST" action="" class="settings-profile-card__bio-form">
+                    <input type="hidden" name="action" value="update_profile_info">
+
+                    <label for="bio" class="settings-profile-card__label">Descripción</label>
+                    <textarea
+                        name="bio"
+                        id="bio"
+                        rows="5"
+                        maxlength="280"
+                        placeholder="Cuéntanos algo sobre ti, tus intereses o tu enfoque editorial..."
+                    ><?php echo htmlspecialchars($user['bio'] ?? ''); ?></textarea>
+
+                    <button type="submit" class="settings-button">Guardar descripción</button>
+                </form>
             <?php endif; ?>
 
             <?php if ($activeView === 'comments'): ?>
@@ -302,7 +333,7 @@ function renderOwnContentCards(array $items, string $type): void
                 <?php if ($userComments): ?>
                     <div class="settings-comments-list">
                         <?php foreach ($userComments as $comment): ?>
-                            <article class="settings-comment-card fade-in-up">
+                            <article class="settings-comment-card">
                                 <p class="settings-comment-card__post">
                                     En <a href="../posts/detail.php?id=<?php echo (int) $comment['post_id']; ?>#comments"><?php echo htmlspecialchars($comment['post_title']); ?></a>
                                 </p>
@@ -323,7 +354,7 @@ function renderOwnContentCards(array $items, string $type): void
                 <?php if ($notifications): ?>
                     <div class="settings-notifications-list">
                         <?php foreach ($notifications as $notification): ?>
-                            <article class="settings-notification-card fade-in-up">
+                            <article class="settings-notification-card">
                                 <p><?php echo htmlspecialchars($notification['message']); ?></p>
                                 <?php if (!empty($notification['post_id'])): ?>
                                     <a href="../posts/detail.php?id=<?php echo (int) $notification['post_id']; ?>#comments" class="settings-button settings-button--ghost">Ir al post</a>

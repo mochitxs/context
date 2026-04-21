@@ -20,6 +20,29 @@ body.articles-view-page {
     margin-bottom: 18px;
 }
 
+.articles-view-actions {
+    margin-top: 12px;
+}
+
+.articles-view-actions__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 1.5px solid #bdd0e8;
+    background: rgba(248, 248, 248, 0.94);
+    color: #4b4b4b;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.articles-view-actions__button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
 .articles-view-title {
     color: #1a1a1a;
     font-family: 'Inter', sans-serif;

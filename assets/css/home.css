@@ -70,6 +70,15 @@ body.auth-page {
     position: sticky;
     top: 20px;
     z-index: 1000;
+    backdrop-filter: blur(10px);
+    transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+    transform-origin: center top;
+}
+
+.main-header:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+    border-color: rgba(189, 208, 232, 1);
 }
 
 /* Logo */
@@ -79,6 +88,15 @@ body.auth-page {
     font-weight: 800;
     color: #000;
     text-decoration: none;
+    display: inline-block;
+    transform-origin: 50% 65%;
+    transition: transform 0.26s ease, color 0.26s ease, filter 0.26s ease;
+}
+
+.main-header__logo a:hover {
+    transform: rotate(-5deg) scale(1.02);
+    color: #1a1a1a;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.08));
 }
 
 /* Navegación */
@@ -89,17 +107,37 @@ body.auth-page {
 }
 
 .main-header__nav a {
+    position: relative;
     text-decoration: none;
     color: #2d2d2d;
     font-size: 1.1rem;
     font-weight: 400;
-    transition: font-weight 0.2s ease;
+    transition: color 0.22s ease, transform 0.22s ease;
+}
+
+.main-header__nav a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -8px;
+    width: 0;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #ffc0e8 0%, #bdd0e8 100%);
+    transform: translateX(-50%);
+    transition: width 0.22s ease;
 }
 
 .main-header__nav a:hover,
 .main-header__nav a.is-active {
     font-weight: 700;
-    color: var(--context-pink-strong)
+    color: var(--context-pink-strong);
+    transform: translateY(-1px);
+}
+
+.main-header__nav a:hover::after,
+.main-header__nav a.is-active::after {
+    width: 100%;
 }
 /* Reglas */
 .main-header__logo a {
@@ -150,12 +188,13 @@ body.auth-page {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
 .create-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+    border-color: rgba(255, 192, 232, 0.95);
 }
 
 .logout-link{
@@ -231,7 +270,7 @@ body.auth-page {
 
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.10);
 
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 .hero__dot {
     display: inline-block;
@@ -246,8 +285,9 @@ body.auth-page {
 }
 
 .hero__button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+    border-color: rgba(255, 192, 232, 0.95);
 }
 
 /* =========================

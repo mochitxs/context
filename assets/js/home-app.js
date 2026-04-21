@@ -1,27 +1,21 @@
 /**
- * Datos de ejemplo para la portada.
+ * Artículo destacado enviado por PHP desde la tabla `posts`.
  *
- * En una siguiente fase estos valores pueden llegar desde PHP o una API
- * en formato JSON. Por ahora sirven para demostrar el uso de React en la
- * home sin perder el estilo editorial definido en el proyecto.
+ * No usamos un fallback con contenido inventado porque el bloque
+ * "Artículo del día" debe reflejar siempre un artículo real publicado
+ * en base de datos.
  *
- * @type {{
+ * @type {null | {
  *   headline: string,
  *   author: string,
  *   date: string,
  *   categoryPills: string[],
  *   imageAlt: string,
- *   imageSrc: string
+ *   imageSrc: string,
+ *   detailUrl: string
  * }}
  */
-const featuredArticle = {
-    headline: "Pilates, clean look, rosa... ¿es esto realmente feminidad?",
-    author: "Agata Jiménez",
-    date: "20 / 3 / 2026",
-    categoryPills: ["Moda", "Identidad", "Opinión"],
-    imageAlt: "Collage editorial del artículo del día",
-    imageSrc: "assets/images/clean_girl.jpeg"
-};
+const featuredArticle = window.CONTEXT_HOME_DATA?.featuredArticle || null;
 
 /**
  * Datos de ejemplo para la canción destacada.
@@ -179,6 +173,36 @@ function FeaturedSongSection() {
  * @returns {JSX.Element} Sección destacada de la home.
  */
 function FeaturedArticleSection() {
+    if (!featuredArticle) {
+        return (
+            <>
+                <section className="featured-article-shell">
+                    <div className="featured-article-shell__topbar"></div>
+                    <div className="featured-article-shell__content">
+                        <div className="featured-article-shell__heading-row">
+                            <div>
+                                <h2 className="featured-article-shell__title">
+                                    <span>Artículo del día;</span>
+                                </h2>
+                            </div>
+
+                            <a href="articles/view.php" className="featured-article-shell__link">
+                                Ver artículos
+                                <span aria-hidden="true">→</span>
+                            </a>
+                        </div>
+
+                        <p className="article-section-card__empty">
+                            Todavía no hay artículos publicados para destacar en portada.
+                        </p>
+                    </div>
+                </section>
+
+                <FeaturedSongSection />
+            </>
+        );
+    }
+
     return (
         <>
             <section className="featured-article-shell">
@@ -191,7 +215,7 @@ function FeaturedArticleSection() {
                             </h2>
                         </div>
 
-                        <a href="articles/view.php" className="featured-article-shell__link">
+                        <a href={featuredArticle.detailUrl || "articles/view.php"} className="featured-article-shell__link">
                             Ver más
                             <span aria-hidden="true">→</span>
                         </a>

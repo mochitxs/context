@@ -3,6 +3,8 @@ session_start();
 require_once '../config/db.php';
 require_once '../includes/functions.php';
 
+$showAllArticles = isset($_GET['show']) && $_GET['show'] === 'all';
+
 /**
  * Agrupaciones editoriales de artículos.
  * Usamos el nombre real de la categoría tal como está en la BD.
@@ -58,9 +60,12 @@ function getExcerpt(string $text, int $length = 250): string
 }
 
 /**
- * Carga hasta 4 artículos publicados para un grupo de categorías.
+ * Carga artículos publicados para un grupo de categorías.
+ *
+ * Si `showAll` es false, devolvemos solo los 4 más recientes para mantener
+ * el layout editorial resumido. Si es true, devolvemos toda la colección.
  */
-function fetchArticlesByCategories(PDO $pdo, array $categories): array
+function fetchArticlesByCategories(PDO $pdo, array $categories, bool $showAll = false): array
 {
     if (empty($categories)) {
         return [];
@@ -85,8 +90,11 @@ function fetchArticlesByCategories(PDO $pdo, array $categories): array
           AND posts.type = 'article'
           AND categories.name IN ($placeholders)
         ORDER BY posts.created_at DESC
-        LIMIT 4
     ";
+
+    if (!$showAll) {
+        $sql .= " LIMIT 4";
+    }
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($categories);
@@ -95,7 +103,7 @@ function fetchArticlesByCategories(PDO $pdo, array $categories): array
 }
 
 foreach ($articleGroups as &$group) {
-    $group['articles'] = fetchArticlesByCategories($pdo, $group['categories']);
+    $group['articles'] = fetchArticlesByCategories($pdo, $group['categories'], $showAllArticles);
     $group['featured'] = $group['articles'][0] ?? null;
     $group['secondary'] = array_slice($group['articles'], 1);
 }
@@ -117,6 +125,19 @@ $visibleArticleGroups = array_values(array_filter(
     $articleGroups,
     static fn(array $group): bool => !empty($group['articles'])
 ));
+
+/**
+ * Cuenta cuántos artículos se están mostrando en esta vista concreta.
+ *
+ * En modo resumen puede haber menos artículos visibles que artículos
+ * publicados, y usamos esta diferencia para decidir si merece la pena
+ * enseñar el botón "Mostrar todos".
+ */
+$visibleArticlesCount = array_reduce(
+    $visibleArticleGroups,
+    static fn(int $carry, array $group): int => $carry + count($group['articles']),
+    0
+);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -149,6 +170,20 @@ $visibleArticleGroups = array_values(array_filter(
         <h1 class="articles-view-title">
             <span>artículos;</span>
         </h1>
+
+        <?php if (($articlesCount > $visibleArticlesCount) || $showAllArticles): ?>
+            <div class="articles-view-actions">
+                <?php if (!$showAllArticles): ?>
+                    <a href="view.php?show=all" class="articles-view-actions__button">
+                        Mostrar todos
+                    </a>
+                <?php else: ?>
+                    <a href="view.php" class="articles-view-actions__button">
+                        Ver resumen
+                    </a>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
     </section>
 
     <?php if (empty($visibleArticleGroups)): ?>
@@ -222,10 +257,6 @@ $visibleArticleGroups = array_values(array_filter(
                             </span>
                         </div>
 
-                        <span class="content-author__name">
-                            <?php echo htmlspecialchars($article['author_name']); ?>
-                        </span>
-                    </div>
                     </div>
                 </article>
             <?php else: ?>
