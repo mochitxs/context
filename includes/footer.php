@@ -37,3 +37,5 @@
         <p>© 2026 CONTEXT</p>
     </div>
 </footer>
+
+<script src="<?php echo htmlspecialchars(ctx_url('assets/js/reveal.js')); ?>"></script>

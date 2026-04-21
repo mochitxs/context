@@ -164,6 +164,7 @@ $visibleArticlesCount = array_reduce(
         data-total="<?php echo $articlesCount; ?>"
         data-label="artículos"
         data-description=""
+        data-variant="articles"
     ></div>
 
     <section class="articles-view-hero">
@@ -175,7 +176,7 @@ $visibleArticlesCount = array_reduce(
             <div class="articles-view-actions">
                 <?php if (!$showAllArticles): ?>
                     <a href="view.php?show=all" class="articles-view-actions__button">
-                        Mostrar todos
+                        Mostrar todos los artículos
                     </a>
                 <?php else: ?>
                     <a href="view.php" class="articles-view-actions__button">

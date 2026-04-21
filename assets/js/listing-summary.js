@@ -2,13 +2,31 @@
  * Resumen visual de listados con React.
  */
 
-function ListingSummaryCard({ label, total, description }) {
+function ListingSummaryCard({ label, total, description, variant }) {
+    if (variant === "articles") {
+        return (
+            <section className="listing-summary listing-summary--articles">
+                <div className="listing-summary__inner listing-summary__inner--articles">
+                    <div className="listing-summary__count listing-summary__count--articles">
+                        <span className="listing-summary__label listing-summary__label--articles">
+                            {label}
+                        </span>
+
+                        <span className="listing-summary__badge listing-summary__badge--articles">
+                            {total}
+                        </span>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
     const wrapperClassName = description
         ? "mb-14 border-b border-[rgba(75,75,75,0.35)] pb-3"
         : "mb-8";
 
     return (
-        <section className={wrapperClassName}>
+        <section className={`listing-summary ${wrapperClassName}`}>
         <div className="mx-auto w-[min(1120px,calc(100vw-48px))] px-1">
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -40,12 +58,14 @@ document.querySelectorAll('[data-react-listing-summary]').forEach((node) => {
     const total = Number(node.dataset.total || 0);
     const label = node.dataset.label || 'items';
     const description = node.dataset.description || '';
+    const variant = node.dataset.variant || 'default';
 
     root.render(
         <ListingSummaryCard
             label={label}
             total={total}
             description={description}
+            variant={variant}
         />
     );
 });
