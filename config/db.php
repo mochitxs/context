@@ -33,3 +33,34 @@ foreach ($dsnCandidates as $dsn) {
 if (!$pdo) {
     die('Error de conexión ;(( : ' . ($lastException ? $lastException->getMessage() : 'No se pudo conectar a la base de datos.'));
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

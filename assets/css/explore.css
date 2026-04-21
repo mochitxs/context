@@ -55,9 +55,10 @@ body.explore-page{
 }
 
 .explore-subtitle {
-    margin-top: 20px;
-    font-size: 1.1rem;
+    margin-top: 12px;
+    font-family: 'Playfair Display', serif;
     font-style: italic;
+    font-size: 1.15rem;
     color: #5a5a5a;
 }
 

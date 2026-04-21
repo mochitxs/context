@@ -14,6 +14,15 @@ $postId = (int) $_GET['id'];
 $commentMessage = '';
 $commentMessageType = 'info';
 $commentsEnabled = true;
+$likeMessage = '';
+$likesEnabled = true;
+
+try {
+    ctx_ensure_post_likes_table($pdo);
+} catch (Throwable $exception) {
+    $likeMessage = 'Los likes no están disponibles temporalmente.';
+    $likesEnabled = false;
+}
 
 /**
  * Intentamos asegurar la tabla de comentarios.
@@ -118,6 +127,47 @@ if (
 }
 
 /**
+ * Procesamiento del like del post.
+ */
+if (
+    $likesEnabled &&
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    ($_POST['form_type'] ?? '') === 'toggle_post_like'
+) {
+    if (!isset($_SESSION['user_id'])) {
+        $likeMessage = 'Necesitas iniciar sesión para dar like.';
+    } else {
+        $likeUserId = (int) $_SESSION['user_id'];
+
+        $existingLikeStmt = $pdo->prepare("
+            SELECT id
+            FROM post_likes
+            WHERE post_id = ? AND user_id = ?
+            LIMIT 1
+        ");
+        $existingLikeStmt->execute([$postId, $likeUserId]);
+        $existingLikeId = $existingLikeStmt->fetchColumn();
+
+        if ($existingLikeId) {
+            $deleteLikeStmt = $pdo->prepare("
+                DELETE FROM post_likes
+                WHERE post_id = ? AND user_id = ?
+            ");
+            $deleteLikeStmt->execute([$postId, $likeUserId]);
+        } else {
+            $insertLikeStmt = $pdo->prepare("
+                INSERT INTO post_likes (post_id, user_id)
+                VALUES (?, ?)
+            ");
+            $insertLikeStmt->execute([$postId, $likeUserId]);
+        }
+
+        header('Location: detail.php?id=' . $postId . '#post-actions');
+        exit;
+    }
+}
+
+/**
  * Cargamos el post con su autor y categoría.
  * Solo mostramos publicaciones publicadas y de tipo post.
  */
@@ -129,6 +179,7 @@ $sql = "
         posts.cover_image,
         posts.created_at,
         posts.type,
+        posts.user_id,
         categories.name AS category_name,
         users.username AS author_name,
         users.profile_image
@@ -150,6 +201,10 @@ if (!$post) {
 }
 
 $formattedDate = date('d/m/Y', strtotime($post['created_at']));
+$likesCount = $likesEnabled ? ctx_get_post_likes_count($pdo, $postId) : 0;
+$userHasLiked = $likesEnabled && isset($_SESSION['user_id'])
+    ? ctx_user_likes_post($pdo, $postId, (int) $_SESSION['user_id'])
+    : false;
 $comments = [];
 $commentSetupHint = '';
 
@@ -234,6 +289,30 @@ if ($commentsEnabled) {
 
             <section class="post-view-card__content">
                 <?php echo ctx_render_paragraphs($post['content']); ?>
+            </section>
+
+            <section id="post-actions" class="post-actions">
+                <div class="post-actions__likes">
+                    <form method="POST" action="" class="post-actions__form">
+                        <input type="hidden" name="form_type" value="toggle_post_like">
+                        <button
+                            type="submit"
+                            class="post-actions__like-button <?php echo $userHasLiked ? 'is-active' : ''; ?>"
+                        >
+                            <?php echo $userHasLiked ? '♥ Te gusta' : '♡ Me gusta'; ?>
+                        </button>
+                    </form>
+
+                    <span class="post-actions__count">
+                        <?php echo $likesCount; ?> like<?php echo $likesCount === 1 ? '' : 's'; ?>
+                    </span>
+                </div>
+
+                <?php if ($likeMessage !== ''): ?>
+                    <p class="post-actions__message">
+                        <?php echo htmlspecialchars($likeMessage); ?>
+                    </p>
+                <?php endif; ?>
             </section>
 
             <section id="comments" class="post-comments">

@@ -162,7 +162,7 @@ body.articles-view-page {
     display: flex;
     align-items: center;
     gap: 0.55rem;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     font-family: 'Playfair Display', serif;
     color: #6a584f;
     font-size: 1rem;
@@ -211,6 +211,49 @@ body.articles-view-page {
     font-size: 0.95rem;
     font-weight: 700;
     color: #4e4038;
+}
+
+.article-view-card__followers {
+    color: #6a584f;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.article-view-card__follow-form {
+    margin: 0;
+}
+
+.article-view-card__follow-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1.5px solid #bdd0e8;
+    background: #fcfcfc;
+    color: #4b4b4b;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+}
+
+.article-view-card__follow-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+    border-color: rgba(255, 192, 232, 0.95);
+}
+
+.article-view-card__follow-button.is-active {
+    background: #eef6df;
+    border-color: rgba(196, 221, 149, 0.95);
+    color: #4c6130;
+}
+
+.article-view-card__follow-message {
+    margin-top: 12px;
+    color: #7a4d61;
+    font-size: 0.95rem;
 }
 /* =========================
    FEATURED

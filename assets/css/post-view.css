@@ -28,11 +28,19 @@
 .post-card {
     width: 100%;
     max-width: 220px;
+    min-height: 372px;
     background: rgba(248, 248, 248, 0.95);
     border: 1.5px solid #bdd0e8;
     border-radius: 28px;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
     padding: 18px 18px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.post-card:hover{
+    transform: rotate(-5deg) scale(1.02);
+
 }
 
 .post-card__image-link {
@@ -73,6 +81,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+    flex: 1;
 }
 
 .post-card .tag-pill {
@@ -93,6 +102,7 @@
     font-weight: 800;
     letter-spacing: -0.03em;
     color: #111;
+    min-height: 68px;
 }
 
 .post-card__title a {
@@ -102,6 +112,10 @@
 
 .post-card__title a:hover {
     opacity: 0.82;
+}
+
+.post-card .content-author {
+    margin-top: auto;
 }
 
 .post-card__author {
@@ -301,6 +315,66 @@ body.post-view-page {
 .post-detail-meta__separator,
 .post-detail-meta__date {
     flex-shrink: 0;
+}
+
+/* =========================
+   POST ACTIONS
+   ========================= */
+
+.post-actions {
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1.5px solid rgba(75, 75, 75, 0.12);
+}
+
+.post-actions__likes {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.post-actions__form {
+    margin: 0;
+}
+
+.post-actions__like-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 1.5px solid #bdd0e8;
+    background: #fcfcfc;
+    color: #4b4b4b;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+}
+
+.post-actions__like-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+    border-color: rgba(255, 192, 232, 0.95);
+}
+
+.post-actions__like-button.is-active {
+    background: #ffe9f4;
+    border-color: #f1bdd8;
+    color: #7d4b61;
+}
+
+.post-actions__count {
+    color: #6a584f;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.post-actions__message {
+    margin-top: 12px;
+    color: #7a4d61;
+    font-size: 0.95rem;
 }
 
 /* =========================

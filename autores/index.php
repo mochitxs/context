@@ -1,6 +1,59 @@
 <?php
 session_start();
 require_once '../config/db.php';
+require_once '../includes/functions.php';
+
+$followsEnabled = true;
+
+try {
+    ctx_ensure_user_follows_table($pdo);
+} catch (Throwable $exception) {
+    $followsEnabled = false;
+}
+
+$followMessage = '';
+
+if (
+    $followsEnabled &&
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    ($_POST['form_type'] ?? '') === 'toggle_author_follow'
+) {
+    if (!isset($_SESSION['user_id'])) {
+        $followMessage = 'Necesitas iniciar sesión para seguir a autores.';
+    } else {
+        $followerUserId = (int) $_SESSION['user_id'];
+        $followedUserId = (int) ($_POST['followed_user_id'] ?? 0);
+
+        if ($followedUserId > 0 && $followedUserId !== $followerUserId) {
+            if (ctx_user_follows_author($pdo, $followerUserId, $followedUserId)) {
+                $deleteFollowStmt = $pdo->prepare("
+                    DELETE FROM user_follows
+                    WHERE follower_user_id = ? AND followed_user_id = ?
+                ");
+                $deleteFollowStmt->execute([$followerUserId, $followedUserId]);
+            } else {
+                $insertFollowStmt = $pdo->prepare("
+                    INSERT INTO user_follows (follower_user_id, followed_user_id)
+                    VALUES (?, ?)
+                ");
+                $insertFollowStmt->execute([$followerUserId, $followedUserId]);
+
+                ctx_create_notification(
+                    $pdo,
+                    $followedUserId,
+                    $followerUserId,
+                    null,
+                    null,
+                    'follow',
+                    $_SESSION['username'] . ' ha empezado a seguirte.'
+                );
+            }
+        }
+
+        header('Location: index.php');
+        exit;
+    }
+}
 
 $stmt = $pdo->prepare("
     SELECT id, username, profile_image, bio
@@ -40,11 +93,22 @@ $authors = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </section>
 
     <section class="authors-card">
+        <?php if ($followMessage !== ''): ?>
+            <p class="authors-message"><?php echo htmlspecialchars($followMessage); ?></p>
+        <?php endif; ?>
+
         <?php if (empty($authors)): ?>
             <p class="authors-empty">Todavía no hay autores disponibles.</p>
         <?php else: ?>
             <div class="authors-grid">
                 <?php foreach ($authors as $author): ?>
+                    <?php
+                    $followersCount = $followsEnabled ? ctx_get_author_followers_count($pdo, (int) $author['id']) : 0;
+                    $viewerCanFollow = $followsEnabled && isset($_SESSION['user_id']) && (int) $_SESSION['user_id'] !== (int) $author['id'];
+                    $viewerFollows = $viewerCanFollow
+                        ? ctx_user_follows_author($pdo, (int) $_SESSION['user_id'], (int) $author['id'])
+                        : false;
+                    ?>
                     <article class="author-item">
                         <div class="author-item__avatar">
                             <?php if (!empty($author['profile_image'])): ?>
@@ -68,6 +132,20 @@ $authors = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 ? htmlspecialchars($author['bio'])
                                 : 'Este autor todavía no ha añadido una descripción.'; ?>
                         </p>
+
+                        <p class="author-item__followers">
+                            <?php echo $followersCount; ?> seguidor<?php echo $followersCount === 1 ? '' : 'es'; ?>
+                        </p>
+
+                        <?php if ($viewerCanFollow): ?>
+                            <form method="POST" action="" class="author-item__follow-form">
+                                <input type="hidden" name="form_type" value="toggle_author_follow">
+                                <input type="hidden" name="followed_user_id" value="<?php echo (int) $author['id']; ?>">
+                                <button type="submit" class="author-item__follow-button <?php echo $viewerFollows ? 'is-active' : ''; ?>">
+                                    <?php echo $viewerFollows ? 'Siguiendo' : 'Seguir'; ?>
+                                </button>
+                            </form>
+                        <?php endif; ?>
                     </article>
                 <?php endforeach; ?>
             </div>

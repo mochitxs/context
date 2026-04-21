@@ -3,6 +3,14 @@ session_start();
 require_once '../config/db.php';
 require_once '../includes/functions.php';
 
+$followsEnabled = true;
+
+try {
+    ctx_ensure_user_follows_table($pdo);
+} catch (Throwable $exception) {
+    $followsEnabled = false;
+}
+
 /**
  * Comprobamos que exista un id válido en la URL.
  */
@@ -11,6 +19,49 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 }
 
 $articleId = (int) $_GET['id'];
+$followMessage = '';
+
+if (
+    $followsEnabled &&
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    ($_POST['form_type'] ?? '') === 'toggle_author_follow'
+) {
+    if (!isset($_SESSION['user_id'])) {
+        $followMessage = 'Necesitas iniciar sesión para seguir a autores.';
+    } else {
+        $followerUserId = (int) $_SESSION['user_id'];
+        $followedUserId = (int) ($_POST['followed_user_id'] ?? 0);
+
+        if ($followedUserId > 0 && $followedUserId !== $followerUserId) {
+            if (ctx_user_follows_author($pdo, $followerUserId, $followedUserId)) {
+                $deleteFollowStmt = $pdo->prepare("
+                    DELETE FROM user_follows
+                    WHERE follower_user_id = ? AND followed_user_id = ?
+                ");
+                $deleteFollowStmt->execute([$followerUserId, $followedUserId]);
+            } else {
+                $insertFollowStmt = $pdo->prepare("
+                    INSERT INTO user_follows (follower_user_id, followed_user_id)
+                    VALUES (?, ?)
+                ");
+                $insertFollowStmt->execute([$followerUserId, $followedUserId]);
+
+                ctx_create_notification(
+                    $pdo,
+                    $followedUserId,
+                    $followerUserId,
+                    null,
+                    null,
+                    'follow',
+                    $_SESSION['username'] . ' ha empezado a seguirte.'
+                );
+            }
+        }
+
+        header('Location: detail.php?id=' . $articleId . '#article-author');
+        exit;
+    }
+}
 
 /**
  * Cargamos el artículo con su autor y categoría.
@@ -24,6 +75,7 @@ $sql = "
         posts.cover_image,
         posts.created_at,
         posts.type,
+        posts.user_id,
         categories.name AS category_name,
         users.username AS author_name,
         users.profile_image
@@ -48,6 +100,11 @@ if (!$article) {
  * Formatea la fecha para mostrarla mejor.
  */
 $formattedDate = date('d/m/Y', strtotime($article['created_at']));
+$authorFollowersCount = $followsEnabled ? ctx_get_author_followers_count($pdo, (int) $article['user_id']) : 0;
+$viewerCanFollowAuthor = $followsEnabled && isset($_SESSION['user_id']) && (int) $_SESSION['user_id'] !== (int) $article['user_id'];
+$viewerFollowsAuthor = $viewerCanFollowAuthor
+    ? ctx_user_follows_author($pdo, (int) $_SESSION['user_id'], (int) $article['user_id'])
+    : false;
 
 /**
  * Convierte saltos de línea en párrafos sencillos.
@@ -99,7 +156,7 @@ function renderContent(string $text): string
                     <?php echo htmlspecialchars($article['title']); ?>
                 </h1>
 
-                <div class="article-view-card__meta">
+                <div id="article-author" class="article-view-card__meta">
                     <div class="content-author">
                         <div class="content-author__avatar">
                             <?php if (!empty($article['profile_image'])): ?>
@@ -119,12 +176,35 @@ function renderContent(string $text): string
                         </span>
                     </div>
 
-    <span class="article-view-card__separator">·</span>
+                    <span class="article-view-card__followers">
+                        <?php echo $authorFollowersCount; ?> seguidor<?php echo $authorFollowersCount === 1 ? '' : 'es'; ?>
+                    </span>
 
-    <span class="article-view-card__date">
-        <?php echo htmlspecialchars($formattedDate); ?>
-    </span>
-</div>
+                    <?php if ($viewerCanFollowAuthor): ?>
+                        <form method="POST" action="" class="article-view-card__follow-form">
+                            <input type="hidden" name="form_type" value="toggle_author_follow">
+                            <input type="hidden" name="followed_user_id" value="<?php echo (int) $article['user_id']; ?>">
+                            <button
+                                type="submit"
+                                class="article-view-card__follow-button <?php echo $viewerFollowsAuthor ? 'is-active' : ''; ?>"
+                            >
+                                <?php echo $viewerFollowsAuthor ? 'Siguiendo' : 'Seguir'; ?>
+                            </button>
+                        </form>
+                    <?php endif; ?>
+
+                    <span class="article-view-card__separator">·</span>
+
+                    <span class="article-view-card__date">
+                        <?php echo htmlspecialchars($formattedDate); ?>
+                    </span>
+                </div>
+
+                <?php if ($followMessage !== ''): ?>
+                    <p class="article-view-card__follow-message">
+                        <?php echo htmlspecialchars($followMessage); ?>
+                    </p>
+                <?php endif; ?>
             </header>
 
             <?php if (!empty($article['cover_image'])): ?>

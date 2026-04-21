@@ -121,6 +121,120 @@ function ctx_pick_editorial_color_variable(int $seed): string
 }
 
 /**
+ * Asegura la tabla de likes para posts.
+ *
+ * @param PDO $pdo Conexión activa.
+ * @return void
+ */
+function ctx_ensure_post_likes_table(PDO $pdo): void
+{
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS post_likes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            post_id INT NOT NULL,
+            user_id INT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY uniq_post_like (post_id, user_id),
+            INDEX idx_post_likes_post_id (post_id),
+            INDEX idx_post_likes_user_id (user_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ");
+}
+
+/**
+ * Asegura la tabla de follows entre usuarios y autores.
+ *
+ * @param PDO $pdo Conexión activa.
+ * @return void
+ */
+function ctx_ensure_user_follows_table(PDO $pdo): void
+{
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS user_follows (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            follower_user_id INT NOT NULL,
+            followed_user_id INT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY uniq_user_follow (follower_user_id, followed_user_id),
+            INDEX idx_user_follows_follower (follower_user_id),
+            INDEX idx_user_follows_followed (followed_user_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ");
+}
+
+/**
+ * Devuelve el número de likes de un post.
+ *
+ * @param PDO $pdo Conexión activa.
+ * @param int $postId ID del post.
+ * @return int Número total de likes.
+ */
+function ctx_get_post_likes_count(PDO $pdo, int $postId): int
+{
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM post_likes WHERE post_id = ?");
+    $stmt->execute([$postId]);
+
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * Comprueba si un usuario ha dado like a un post.
+ *
+ * @param PDO $pdo Conexión activa.
+ * @param int $postId ID del post.
+ * @param int $userId ID del usuario.
+ * @return bool True si el like existe.
+ */
+function ctx_user_likes_post(PDO $pdo, int $postId, int $userId): bool
+{
+    $stmt = $pdo->prepare("
+        SELECT 1
+        FROM post_likes
+        WHERE post_id = ? AND user_id = ?
+        LIMIT 1
+    ");
+    $stmt->execute([$postId, $userId]);
+
+    return (bool) $stmt->fetchColumn();
+}
+
+/**
+ * Devuelve el número de seguidores de un autor.
+ *
+ * @param PDO $pdo Conexión activa.
+ * @param int $authorId ID del autor.
+ * @return int Número de seguidores.
+ */
+function ctx_get_author_followers_count(PDO $pdo, int $authorId): int
+{
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_follows WHERE followed_user_id = ?");
+    $stmt->execute([$authorId]);
+
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * Comprueba si un usuario sigue a un autor.
+ *
+ * @param PDO $pdo Conexión activa.
+ * @param int $followerUserId ID del seguidor.
+ * @param int $followedUserId ID del autor seguido.
+ * @return bool True si ya lo sigue.
+ */
+function ctx_user_follows_author(PDO $pdo, int $followerUserId, int $followedUserId): bool
+{
+    $stmt = $pdo->prepare("
+        SELECT 1
+        FROM user_follows
+        WHERE follower_user_id = ? AND followed_user_id = ?
+        LIMIT 1
+    ");
+    $stmt->execute([$followerUserId, $followedUserId]);
+
+    return (bool) $stmt->fetchColumn();
+}
+
+/**
  * Asegura la tabla de comentarios de posts.
  *
  * El sistema permite comentarios principales y respuestas de un solo nivel
