@@ -16,6 +16,7 @@
  * }}
  */
 const featuredArticle = window.CONTEXT_HOME_DATA?.featuredArticle || null;
+const recentArticles = window.CONTEXT_HOME_DATA?.recentArticles || [];
 
 /**
  * Datos de ejemplo para la canción destacada.
@@ -164,6 +165,90 @@ function FeaturedSongSection() {
 }
 
 /**
+ * Tarjeta compacta para los artículos más recientes de la portada.
+ *
+ * @param {{
+ *   article: {
+ *     headline: string,
+ *     author: string,
+ *     date: string,
+ *     category: string,
+ *     excerpt: string,
+ *     imageAlt: string,
+ *     imageSrc: string,
+ *     detailUrl: string
+ *   }
+ * }} props
+ * @returns {JSX.Element}
+ */
+function RecentArticleCard({ article }) {
+    return (
+        <article className="recent-articles-card">
+            <a href={article.detailUrl} className="recent-articles-card__image-link">
+                <img
+                    className="recent-articles-card__image"
+                    src={article.imageSrc}
+                    alt={article.imageAlt}
+                />
+            </a>
+
+            <div className="recent-articles-card__body">
+                <CategoryPill label={article.category} />
+
+                <h3 className="recent-articles-card__headline">
+                    <a href={article.detailUrl}>{article.headline}</a>
+                </h3>
+
+                <p className="recent-articles-card__excerpt">{article.excerpt}</p>
+
+                <p className="recent-articles-card__meta">
+                    Por {article.author} · {article.date}
+                </p>
+            </div>
+        </article>
+    );
+}
+
+/**
+ * Renderiza el bloque de los tres artículos más recientes.
+ *
+ * @returns {JSX.Element | null}
+ */
+function RecentArticlesSection() {
+    if (!recentArticles.length) {
+        return null;
+    }
+
+    return (
+        <section className="recent-articles-shell">
+            <div className="recent-articles-shell__content">
+                <div className="featured-article-shell__heading-row">
+                    <div>
+                        <h2 className="recent-articles-shell__title">
+                            <span>recién publicado;</span>
+                        </h2>
+                    </div>
+
+                    <a href="articles/view.php" className="featured-article-shell__link">
+                        Ver artículos
+                        <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+
+                <div className="recent-articles-grid">
+                    {recentArticles.map((article) => (
+                        <RecentArticleCard
+                            key={`${article.detailUrl}-${article.headline}`}
+                            article={article}
+                        />
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+/**
  * Componente principal del bloque "Artículo del día".
  *
  * Este componente reutiliza la estructura editorial del mockup y permite
@@ -199,6 +284,7 @@ function FeaturedArticleSection() {
                 </section>
 
                 <FeaturedSongSection />
+                <RecentArticlesSection />
             </>
         );
     }
@@ -242,6 +328,7 @@ function FeaturedArticleSection() {
             </section>
 
             <FeaturedSongSection />
+            <RecentArticlesSection />
         </>
     );
 }

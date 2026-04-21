@@ -55,6 +55,7 @@ $postsCount = count($posts);
 
     <section class="posts-view-grid">
         <?php foreach ($posts as $post): ?>
+            <?php $placeholderColor = ctx_pick_editorial_color_variable((int) $post['id']); ?>
             <article class="post-card">
 
                 <a href="detail.php?id=<?php echo $post['id']; ?>" class="post-card__image-link">
@@ -65,7 +66,11 @@ $postsCount = count($posts);
                             class="post-card__image"
                         >
                     <?php else: ?>
-                        <div class="post-card__image post-card__image--placeholder"></div>
+                        <div
+                            class="post-card__image post-card__image--placeholder"
+                            style="--post-placeholder-color: var(<?php echo htmlspecialchars($placeholderColor); ?>);"
+                            aria-hidden="true"
+                        ></div>
                     <?php endif; ?>
                 </a>
 

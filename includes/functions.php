@@ -97,6 +97,30 @@ function ctx_render_paragraphs(string $text): string
 }
 
 /**
+ * Devuelve una variable CSS de la paleta editorial para placeholders.
+ *
+ * La elección se hace de forma determinista a partir de una semilla
+ * numérica, normalmente el ID de un post, para que el color no cambie
+ * en cada recarga.
+ *
+ * @param int $seed Valor numérico usado para repartir colores.
+ * @return string Nombre de variable CSS listo para usar en `var(...)`.
+ */
+function ctx_pick_editorial_color_variable(int $seed): string
+{
+    $palette = [
+        '--context-grid-blue',
+        '--context-soft-pink',
+        '--context-sage',
+        '--context-cream',
+        '--context-stone',
+        '--context-latte',
+    ];
+
+    return $palette[$seed % count($palette)];
+}
+
+/**
  * Asegura la tabla de comentarios de posts.
  *
  * El sistema permite comentarios principales y respuestas de un solo nivel

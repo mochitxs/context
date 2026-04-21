@@ -159,14 +159,6 @@ $visibleArticlesCount = array_reduce(
 <?php require_once __DIR__ . '/../includes/header.php'; ?>
 
 <main class="articles-view-layout">
-    <div
-        data-react-listing-summary
-        data-total="<?php echo $articlesCount; ?>"
-        data-label="artículos"
-        data-description=""
-        data-variant="articles"
-    ></div>
-
     <section class="articles-view-hero">
         <h1 class="articles-view-title">
             <span>artículos;</span>

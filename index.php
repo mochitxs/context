@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/config/db.php';
 
 $randomFeaturedArticle = null;
+$recentArticles = [];
 
 try {
     /**
@@ -55,6 +56,34 @@ try {
     }
 } catch (Throwable $exception) {
     $randomFeaturedArticle = null;
+}
+
+try {
+    /**
+     * Recupera los tres artículos más recientes para completar la portada
+     * con un bloque editorial de lectura rápida.
+     */
+    $recentArticlesStmt = $pdo->query("
+        SELECT
+            posts.id,
+            posts.title,
+            posts.content,
+            posts.created_at,
+            posts.cover_image,
+            categories.name AS category_name,
+            users.username AS author_name
+        FROM posts
+        INNER JOIN categories ON posts.category_id = categories.id
+        INNER JOIN users ON posts.user_id = users.id
+        WHERE posts.status = 'published'
+          AND posts.type = 'article'
+        ORDER BY posts.created_at DESC, posts.id DESC
+        LIMIT 3
+    ");
+
+    $recentArticles = $recentArticlesStmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+} catch (Throwable $exception) {
+    $recentArticles = [];
 }
 ?>
 
@@ -139,6 +168,24 @@ try {
                         : 'assets/images/clean_girl.jpeg',
                     'detailUrl' => 'articles/detail.php?id=' . (int) $randomFeaturedArticle['id']
                 ] : null,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            ); ?>,
+            recentArticles: <?php echo json_encode(
+                array_map(
+                    static fn(array $article): array => [
+                        'headline' => $article['title'],
+                        'author' => $article['author_name'],
+                        'date' => date('d / m / Y', strtotime($article['created_at'])),
+                        'category' => $article['category_name'],
+                        'excerpt' => ctx_excerpt($article['content'], 120),
+                        'imageAlt' => 'Imagen del artículo ' . $article['title'],
+                        'imageSrc' => !empty($article['cover_image'])
+                            ? $article['cover_image']
+                            : 'assets/images/clean_girl.jpeg',
+                        'detailUrl' => 'articles/detail.php?id=' . (int) $article['id']
+                    ],
+                    $recentArticles
+                ),
                 JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
             ); ?>
         };
