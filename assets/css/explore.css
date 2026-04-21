@@ -5,6 +5,10 @@
    body.explore-page {
     min-height: 100vh;
     background-color: #f7f7f7;
+    background-image:
+        linear-gradient(to right, rgba(135, 171, 220, 0.65) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(135, 171, 220, 0.65) 1px, transparent 1px);
+    background-size: 40px 40px;
 
    }
 
@@ -87,7 +91,7 @@ body.explore-page{
 
 /* contenido */
 .explore-card__inner h2 {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Playfair Display', sans-serif;
     font-size: 2.4rem;
     font-weight: 800;
     margin-bottom: 10px;

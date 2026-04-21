@@ -352,8 +352,8 @@ body.auth-page {
 .featured-article-section {
     margin-top: 24px;
     padding: 28px 0 120px;
-    background: #fbfbfb;
-    box-shadow: inset 0 1px 0 rgba(189, 208, 232, 0.55);
+    background: transparent;
+    box-shadow: none;
 }
 
 .featured-article-shell {
@@ -365,18 +365,16 @@ body.auth-page {
 
 
 .featured-article-shell__topbar {
-    height: 40px;
-    background: var(--context-sage);
-    margin-bottom: 18px;
+    display: none;
 }
 
 .featured-article-shell__content {
     width: min(1120px, calc(100vw - 180px));
     margin: 0 auto;
-    margin-top: 50px;
+    margin-top: 0;
     background: rgba(248, 248, 248, 0.92);
     padding: 28px 30px 32px;
-    border-top: 8px solid var(--context-sage);
+    border: 1.5px solid rgba(189, 208, 232, 0.72);
     border-radius: 28px;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
 }
@@ -418,7 +416,7 @@ body.auth-page {
 }
 
 .featured-article-shell__link span {
-    color: #9daf62;
+    color: #8ea55d;
     font-size: 1.35rem;
     line-height: 1;
 }
@@ -501,8 +499,7 @@ body.auth-page {
     margin: 0 auto;
     background: rgba(248, 248, 248, 0.92);
     padding: 24px 26px 28px;
-    border-top: 8px solid #ffc0e8;
-
+    border: 1.5px solid rgba(189, 208, 232, 0.72);
     border-radius: 28px;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
 }
@@ -539,7 +536,7 @@ body.auth-page {
 
 .featured-song-card__cover--placeholder {
     position: relative;
-    background: linear-gradient(145deg, rgb(239, 223, 223) 0%, #f7f2ea 35%, #dfecc6 100%);
+    background: linear-gradient(145deg, rgb(239, 223, 223) 0%, #f7f2ea 35%, rgba(196, 221, 149, 0.45) 100%);
 }
 
 .featured-song-card__vinyl {
@@ -576,7 +573,7 @@ body.auth-page {
     font-size: 0.95rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #7c8d70;
+    color: #7b8f59;
 }
 
 .featured-song-card__title {
@@ -625,7 +622,7 @@ body.auth-page {
     margin: 0 auto;
     background: rgba(248, 248, 248, 0.92);
     padding: 24px 26px 28px;
-    border-top: 8px solid #bdd0e8;
+    border: 1.5px solid rgba(189, 208, 232, 0.72);
     border-radius: 28px;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
 }
@@ -663,6 +660,13 @@ body.auth-page {
 .recent-articles-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 22px rgba(0, 0, 0, 0.08);
+}
+
+.recent-articles-card::before {
+    content: "";
+    display: block;
+    height: 4px;
+    background: linear-gradient(90deg, rgba(196, 221, 149, 0.92), rgba(189, 208, 232, 0.3));
 }
 
 .recent-articles-card__image-link {
