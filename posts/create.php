@@ -55,7 +55,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $type = trim($_POST["type"] ?? "");
     $title = trim($_POST["title"] ?? "");
     $categoryId = trim($_POST["category_id"] ?? "");
-    $content = trim($_POST["content"] ?? "");
+    $content = $_POST["content"] ?? "";
+$content = trim($content);
+
+/**
+ * Permitimos solo etiquetas básicas de formato
+ */
+$content = strip_tags($content, '<b><strong><i><em><u><p><br><ul><ol><li><blockquote>');
+
+/**
+ * Eliminamos atributos tipo data-start, data-end, etc.
+ */
+$content = preg_replace('/\sdata-[a-zA-Z0-9_-]+="[^"]*"/i', '', $content);
+
+/**
+ * Eliminamos atributos vacíos o innecesarios en etiquetas permitidas
+ */
+$content = preg_replace('/\sclass="[^"]*"/i', '', $content);
+$content = preg_replace('/\sid="[^"]*"/i', '', $content);
+$content = preg_replace('/\sstyle="[^"]*"/i', '', $content);
 
     $coverImagePath = null;
 
@@ -220,8 +238,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <div class="create-form__group">
-                    <label for="content">Contenido</label>
-                    <textarea name="content" id="content" rows="12" required></textarea>
+                    <label for="editor">Contenido</label>
+
+                    <div class="editor-toolbar">
+                        <button type="button" onclick="formatText('bold')"><b>B</b></button>
+                        <button type="button" onclick="formatText('italic')"><i>I</i></button>
+                        <button type="button" onclick="formatText('underline')"><u>U</u></button>
+                    </div>
+
+                    <div id="editor" class="editor" contenteditable="true"></div>
+                    <input type="hidden" name="content" id="hidden-content" required>
                 </div>
 
                 <div class="create-form__optional">
@@ -266,8 +292,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             fileText.textContent = "Ningún archivo seleccionado";
         }
     });
-</script>
 
+    function formatText(command) {
+        document.execCommand(command, false, null);
+        document.getElementById("editor").focus();
+    }
+
+    const form = document.querySelector(".create-form");
+    const editor = document.getElementById("editor");
+    const hiddenContent = document.getElementById("hidden-content");
+
+    form.addEventListener("submit", function (e) {
+        hiddenContent.value = editor.innerHTML.trim();
+
+        if (hiddenContent.value === "") {
+            e.preventDefault();
+            alert("Completa el campo contenido.");
+        }
+    });
+</script>
 <?php require_once '../includes/footer.php'; ?>
 
 </body>

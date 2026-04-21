@@ -139,7 +139,8 @@ body.section-page {
     background: #fcfcfc;
     color: #4b4b4b;
     text-decoration: none;
-    font-weight: 700;
+    font-weight: 600;
+    font-size: 0.8rem;
     cursor: pointer;
 }
 

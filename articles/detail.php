@@ -25,7 +25,8 @@ $sql = "
         posts.created_at,
         posts.type,
         categories.name AS category_name,
-        users.username AS author_name
+        users.username AS author_name,
+        users.profile_image
     FROM posts
     INNER JOIN categories ON posts.category_id = categories.id
     INNER JOIN users ON posts.user_id = users.id
@@ -98,9 +99,32 @@ function renderContent(string $text): string
                     <?php echo htmlspecialchars($article['title']); ?>
                 </h1>
 
-                <p class="article-view-card__meta">
-                    Por <?php echo htmlspecialchars($article['author_name']); ?> · <?php echo htmlspecialchars($formattedDate); ?>
-                </p>
+                <div class="article-view-card__meta">
+                    <div class="content-author">
+                        <div class="content-author__avatar">
+                            <?php if (!empty($article['profile_image'])): ?>
+                                <img
+                                    src="../<?php echo htmlspecialchars($article['profile_image']); ?>"
+                                    alt="Foto de perfil de <?php echo htmlspecialchars($article['author_name']); ?>"
+                                >
+                            <?php else: ?>
+                                <span>
+                                    <?php echo strtoupper(mb_substr($article['author_name'], 0, 1)); ?>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+
+                        <span class="content-author__name">
+                            <?php echo htmlspecialchars($article['author_name']); ?>
+                        </span>
+                    </div>
+
+    <span class="article-view-card__separator">·</span>
+
+    <span class="article-view-card__date">
+        <?php echo htmlspecialchars($formattedDate); ?>
+    </span>
+</div>
             </header>
 
             <?php if (!empty($article['cover_image'])): ?>
@@ -114,7 +138,7 @@ function renderContent(string $text): string
             <?php endif; ?>
 
             <section class="article-view-card__content">
-                <?php echo ctx_render_paragraphs($article['content']); ?>
+                <?php echo $article["content"]; ?>
             </section>
 
         </article>

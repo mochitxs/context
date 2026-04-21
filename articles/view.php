@@ -76,7 +76,8 @@ function fetchArticlesByCategories(PDO $pdo, array $categories): array
             posts.cover_image,
             posts.created_at,
             categories.name AS category_name,
-            users.username AS author_name
+            users.username AS author_name,
+            users.profile_image
         FROM posts
         INNER JOIN categories ON posts.category_id = categories.id
         INNER JOIN users ON posts.user_id = users.id
@@ -202,9 +203,29 @@ $visibleArticleGroups = array_values(array_filter(
                             <?php echo htmlspecialchars(getExcerpt($group['featured']['content'], 270)); ?>
                         </p>
 
-                        <p class="article-section-featured__author">
-                            <?php echo htmlspecialchars($group['featured']['author_name']); ?>
-                        </p>
+                        <div class="content-author">
+                            <div class="content-author__avatar">
+                                <?php if (!empty($group['featured']['profile_image'])): ?>
+                                    <img
+                                        src="../<?php echo htmlspecialchars($group['featured']['profile_image']); ?>"
+                                        alt="Foto de perfil de <?php echo htmlspecialchars($group['featured']['author_name']); ?>"
+                                    >
+                                <?php else: ?>
+                                    <span>
+                                        <?php echo strtoupper(mb_substr($group['featured']['author_name'], 0, 1)); ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+
+                            <span class="content-author__name">
+                                <?php echo htmlspecialchars($group['featured']['author_name']); ?>
+                            </span>
+                        </div>
+
+                        <span class="content-author__name">
+                            <?php echo htmlspecialchars($article['author_name']); ?>
+                        </span>
+                    </div>
                     </div>
                 </article>
             <?php else: ?>
@@ -240,9 +261,21 @@ $visibleArticleGroups = array_values(array_filter(
                                     </a>
                                 </h4>
 
-                                <p class="article-section-grid__author">
+                                <div class="content-author">
+                                <div class="content-author__avatar">
+                                    <?php if (!empty($article['profile_image'])): ?>
+                                        <img src="../<?php echo htmlspecialchars($article['profile_image']); ?>">
+                                    <?php else: ?>
+                                        <span>
+                                            <?php echo strtoupper(mb_substr($article['author_name'], 0, 1)); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+
+                                <span class="content-author__name">
                                     <?php echo htmlspecialchars($article['author_name']); ?>
-                                </p>
+                                </span>
+                            </div>
                             </div>
                         </article>
                     <?php endforeach; ?>
