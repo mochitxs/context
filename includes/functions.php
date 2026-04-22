@@ -128,17 +128,31 @@ function ctx_pick_editorial_color_variable(int $seed): string
  */
 function ctx_ensure_post_likes_table(PDO $pdo): void
 {
+    $likesTableExists = (bool) $pdo->query("SHOW TABLES LIKE 'likes'")->fetchColumn();
+    $legacyLikesTableExists = (bool) $pdo->query("SHOW TABLES LIKE 'post_likes'")->fetchColumn();
+
+    if (!$likesTableExists && $legacyLikesTableExists) {
+        $pdo->exec("RENAME TABLE post_likes TO likes");
+    }
+
     $pdo->exec("
-        CREATE TABLE IF NOT EXISTS post_likes (
+        CREATE TABLE IF NOT EXISTS likes (
             id INT AUTO_INCREMENT PRIMARY KEY,
             post_id INT NOT NULL,
             user_id INT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE KEY uniq_post_like (post_id, user_id),
-            INDEX idx_post_likes_post_id (post_id),
-            INDEX idx_post_likes_user_id (user_id)
+            INDEX idx_likes_post_id (post_id),
+            INDEX idx_likes_user_id (user_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ");
+
+    $columnsStmt = $pdo->query("SHOW COLUMNS FROM likes");
+    $columns = array_column($columnsStmt->fetchAll(PDO::FETCH_ASSOC), 'Field');
+
+    if (!in_array('post_id', $columns, true) || !in_array('user_id', $columns, true)) {
+        throw new RuntimeException('La tabla likes no tiene la estructura esperada.');
+    }
 }
 
 /**
@@ -149,17 +163,46 @@ function ctx_ensure_post_likes_table(PDO $pdo): void
  */
 function ctx_ensure_user_follows_table(PDO $pdo): void
 {
+    $followsTableExists = (bool) $pdo->query("SHOW TABLES LIKE 'follows'")->fetchColumn();
+    $legacyFollowsTableExists = (bool) $pdo->query("SHOW TABLES LIKE 'user_follows'")->fetchColumn();
+
+    if (!$followsTableExists && $legacyFollowsTableExists) {
+        $pdo->exec("RENAME TABLE user_follows TO follows");
+    }
+
     $pdo->exec("
-        CREATE TABLE IF NOT EXISTS user_follows (
+        CREATE TABLE IF NOT EXISTS follows (
             id INT AUTO_INCREMENT PRIMARY KEY,
             follower_user_id INT NOT NULL,
             followed_user_id INT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE KEY uniq_user_follow (follower_user_id, followed_user_id),
-            INDEX idx_user_follows_follower (follower_user_id),
-            INDEX idx_user_follows_followed (followed_user_id)
+            INDEX idx_follows_follower (follower_user_id),
+            INDEX idx_follows_followed (followed_user_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ");
+
+    $columnsStmt = $pdo->query("SHOW COLUMNS FROM follows");
+    $columns = array_column($columnsStmt->fetchAll(PDO::FETCH_ASSOC), 'Field');
+
+    /**
+     * Compatibilidad con una versión anterior en la que la tabla se creó
+     * con los nombres follower_id / followed_id.
+     */
+    if (in_array('follower_id', $columns, true) && !in_array('follower_user_id', $columns, true)) {
+        $pdo->exec("ALTER TABLE follows CHANGE follower_id follower_user_id INT NOT NULL");
+    }
+
+    if (in_array('followed_id', $columns, true) && !in_array('followed_user_id', $columns, true)) {
+        $pdo->exec("ALTER TABLE follows CHANGE followed_id followed_user_id INT NOT NULL");
+    }
+
+    $columnsStmt = $pdo->query("SHOW COLUMNS FROM follows");
+    $columns = array_column($columnsStmt->fetchAll(PDO::FETCH_ASSOC), 'Field');
+
+    if (!in_array('follower_user_id', $columns, true) || !in_array('followed_user_id', $columns, true)) {
+        throw new RuntimeException('La tabla follows no tiene la estructura esperada.');
+    }
 }
 
 /**
@@ -171,7 +214,7 @@ function ctx_ensure_user_follows_table(PDO $pdo): void
  */
 function ctx_get_post_likes_count(PDO $pdo, int $postId): int
 {
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM post_likes WHERE post_id = ?");
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM likes WHERE post_id = ?");
     $stmt->execute([$postId]);
 
     return (int) $stmt->fetchColumn();
@@ -189,7 +232,7 @@ function ctx_user_likes_post(PDO $pdo, int $postId, int $userId): bool
 {
     $stmt = $pdo->prepare("
         SELECT 1
-        FROM post_likes
+        FROM likes
         WHERE post_id = ? AND user_id = ?
         LIMIT 1
     ");
@@ -207,7 +250,7 @@ function ctx_user_likes_post(PDO $pdo, int $postId, int $userId): bool
  */
 function ctx_get_author_followers_count(PDO $pdo, int $authorId): int
 {
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_follows WHERE followed_user_id = ?");
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM follows WHERE followed_user_id = ?");
     $stmt->execute([$authorId]);
 
     return (int) $stmt->fetchColumn();
@@ -225,7 +268,7 @@ function ctx_user_follows_author(PDO $pdo, int $followerUserId, int $followedUse
 {
     $stmt = $pdo->prepare("
         SELECT 1
-        FROM user_follows
+        FROM follows
         WHERE follower_user_id = ? AND followed_user_id = ?
         LIMIT 1
     ");

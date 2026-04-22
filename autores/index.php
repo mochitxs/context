@@ -27,13 +27,13 @@ if (
         if ($followedUserId > 0 && $followedUserId !== $followerUserId) {
             if (ctx_user_follows_author($pdo, $followerUserId, $followedUserId)) {
                 $deleteFollowStmt = $pdo->prepare("
-                    DELETE FROM user_follows
+                    DELETE FROM follows
                     WHERE follower_user_id = ? AND followed_user_id = ?
                 ");
                 $deleteFollowStmt->execute([$followerUserId, $followedUserId]);
             } else {
                 $insertFollowStmt = $pdo->prepare("
-                    INSERT INTO user_follows (follower_user_id, followed_user_id)
+                    INSERT INTO follows (follower_user_id, followed_user_id)
                     VALUES (?, ?)
                 ");
                 $insertFollowStmt->execute([$followerUserId, $followedUserId]);
@@ -56,10 +56,19 @@ if (
 }
 
 $stmt = $pdo->prepare("
-    SELECT id, username, profile_image, bio
+    SELECT DISTINCT
+        users.id,
+        users.username,
+        users.profile_image,
+        users.bio
     FROM users
-    WHERE role = 'author'
-    ORDER BY username ASC
+    LEFT JOIN posts
+        ON posts.user_id = users.id
+       AND posts.type = 'article'
+       AND posts.status = 'published'
+    WHERE users.role = 'author'
+       OR posts.id IS NOT NULL
+    ORDER BY users.username ASC
 ");
 $stmt->execute();
 

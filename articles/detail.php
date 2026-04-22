@@ -35,13 +35,13 @@ if (
         if ($followedUserId > 0 && $followedUserId !== $followerUserId) {
             if (ctx_user_follows_author($pdo, $followerUserId, $followedUserId)) {
                 $deleteFollowStmt = $pdo->prepare("
-                    DELETE FROM user_follows
+                    DELETE FROM follows
                     WHERE follower_user_id = ? AND followed_user_id = ?
                 ");
                 $deleteFollowStmt->execute([$followerUserId, $followedUserId]);
             } else {
                 $insertFollowStmt = $pdo->prepare("
-                    INSERT INTO user_follows (follower_user_id, followed_user_id)
+                    INSERT INTO follows (follower_user_id, followed_user_id)
                     VALUES (?, ?)
                 ");
                 $insertFollowStmt->execute([$followerUserId, $followedUserId]);

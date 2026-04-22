@@ -141,7 +141,7 @@ if (
 
         $existingLikeStmt = $pdo->prepare("
             SELECT id
-            FROM post_likes
+            FROM likes
             WHERE post_id = ? AND user_id = ?
             LIMIT 1
         ");
@@ -150,13 +150,13 @@ if (
 
         if ($existingLikeId) {
             $deleteLikeStmt = $pdo->prepare("
-                DELETE FROM post_likes
+                DELETE FROM likes
                 WHERE post_id = ? AND user_id = ?
             ");
             $deleteLikeStmt->execute([$postId, $likeUserId]);
         } else {
             $insertLikeStmt = $pdo->prepare("
-                INSERT INTO post_likes (post_id, user_id)
+                INSERT INTO likes (post_id, user_id)
                 VALUES (?, ?)
             ");
             $insertLikeStmt->execute([$postId, $likeUserId]);
