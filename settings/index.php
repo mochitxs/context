@@ -256,13 +256,13 @@ function renderOwnContentCards(array $items, string $type): void
                 <?php if (($user['role'] ?? '') === 'author'): ?>
                     <a class="<?php echo $activeView === 'articles' ? 'is-active' : ''; ?>" href="?view=articles">artículos</a>
                 <?php endif; ?>
+                <a class="<?php echo $activeView === 'comments' ? 'is-active' : ''; ?>" href="?view=comments">mis comentarios</a>
                 <a class="<?php echo $activeView === 'notifications' ? 'is-active' : ''; ?>" href="?view=notifications">notificaciones</a>
             </nav>
 
             <h2>usuario</h2>
             <nav class="settings-nav">
                 <a class="<?php echo $activeView === 'profile' ? 'is-active' : ''; ?>" href="?view=profile">perfil</a>
-                <a class="<?php echo $activeView === 'comments' ? 'is-active' : ''; ?>" href="?view=comments">mis comentarios</a>
             </nav>
         </aside>
 

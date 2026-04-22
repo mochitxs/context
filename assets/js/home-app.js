@@ -225,7 +225,7 @@ function RecentArticlesSection() {
                 <div className="featured-article-shell__heading-row">
                     <div>
                         <h2 className="recent-articles-shell__title">
-                            <span>recién publicado;</span>
+                            <span>Recién publicado;</span>
                         </h2>
                     </div>
 

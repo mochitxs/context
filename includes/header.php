@@ -24,8 +24,6 @@ if (isset($_SESSION['user_id'], $pdo) && $pdo instanceof PDO) {
     <nav class="main-header__nav">
         <a href="<?php echo htmlspecialchars(ctx_url('index.php')); ?>">home</a>
         <a href="<?php echo htmlspecialchars(ctx_url('explorar/index.php')); ?>">explorar</a>
-        <a href="<?php echo htmlspecialchars(ctx_url('posts/view.php')); ?>">posts</a>
-        <a href="<?php echo htmlspecialchars(ctx_url('articles/view.php')); ?>">artículos</a>
         <a href="<?php echo htmlspecialchars(ctx_url('autores/index.php')); ?>">autores</a>
     </nav>
 
