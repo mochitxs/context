@@ -155,6 +155,11 @@ try {
     </main>
 
     <script>
+        /**
+         * Puente entre PHP y React:
+         * PHP obtiene los datos reales de MySQL y React se encarga de
+         * pintarlos como componentes visuales en la portada.
+         */
         window.CONTEXT_HOME_DATA = {
             featuredArticle: <?php echo json_encode(
                 $randomFeaturedArticle ? [

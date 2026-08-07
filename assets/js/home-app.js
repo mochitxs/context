@@ -17,27 +17,6 @@
  */
 const featuredArticle = window.CONTEXT_HOME_DATA?.featuredArticle || null;
 const recentArticles = window.CONTEXT_HOME_DATA?.recentArticles || [];
-
-/**
- * Datos de ejemplo para la canción destacada.
- *
- * El campo `spotifyUrl` permite abrir la canción destacada en Spotify.
- *
- * @type {{
- *   title: string,
- *   artist: string,
- *   caption: string,
- *   tags: string[],
- *   spotifyUrl: string
- * }}
- */
-const featuredSong = {
-    title: "4Real",
-    artist: "Nine Vicious",
-    caption: "Pick de la administradora :)",
-    tags: ["Música", "Cultura"],
-    spotifyUrl: "https://open.spotify.com/"
-};
 /**
  * Mapa de colores para las categorías.
  * Permite asignar un color fijo a cada tipo de contenido.
@@ -80,87 +59,6 @@ function CategoryPill({ label }) {
 function FeaturedImage({ src, alt }) {
     return (
         <img className="featured-article-card__image" src={src} alt={alt} />
-    );
-}
-
-/**
- * Renderiza la portada de la canción destacada.
- *
- * Si no hay imagen cargada todavía, muestra un bloque visual provisional
- * para que la estructura de la tarjeta no se rompa.
- *
- * @param {{ alt: string, src: string }} props Datos de la portada.
- * @returns {JSX.Element} Portada visual de la canción.
- */
-/**
- * Renderiza un visual editorial para la canción del día.
- *
- * En lugar de depender de una portada real, se genera un bloque visual
- * coherente con la identidad de CONTEXT, evitando que imágenes externas
- * rompan la armonía de la home.
- *
- * @returns {JSX.Element} Visual decorativo de la canción.
- */
-function FeaturedSongCover() {
-    return (
-        <div
-            className="featured-song-card__cover featured-song-card__cover--placeholder"
-            role="img"
-            aria-label="Visual decorativo de la canción del día"
-        >
-            <div className="featured-song-card__vinyl"></div>
-            <div className="featured-song-card__spark"></div>
-        </div>
-    );
-}
-
-/**
- * Renderiza la canción del día.
- *
- * @returns {JSX.Element} Sección destacada de música.
- */
-function FeaturedSongSection() {
-    return (
-        <section className="featured-song-shell">
-            <div className="featured-song-shell__content">
-                <div className="featured-article-shell__heading-row featured-song-shell__heading-row">
-                    <div>
-                        <h2 className="featured-song-shell__title">
-                            <span>Canción del día;</span>
-                        </h2>
-                    </div>
-
-                    <a
-                        href={featuredSong.spotifyUrl}
-                        className="featured-article-shell__link"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        Escuchar
-                        <span aria-hidden="true">→</span>
-                    </a>
-                </div>
-
-                <div className="featured-song-card">
-                    <FeaturedSongCover
-                    />
-
-                    <div className="featured-song-card__body">
-                        <p className="featured-song-card__eyebrow">{featuredSong.artist}</p>
-                        <h3 className="featured-song-card__title">{featuredSong.title}</h3>
-                        <p className="featured-song-card__caption">{featuredSong.caption}</p>
-
-                        <div className="featured-article-card__tags">
-                            {featuredSong.tags.map((tag) => (
-                                <CategoryPill key={tag} label={tag} />
-                            ))}
-                        </div>
-
-                       
-                    </div>
-                </div>
-            </div>
-        </section>
     );
 }
 
@@ -283,7 +181,6 @@ function FeaturedArticleSection() {
                     </div>
                 </section>
 
-                <FeaturedSongSection />
                 <RecentArticlesSection />
             </>
         );
@@ -327,7 +224,6 @@ function FeaturedArticleSection() {
                 </div>
             </section>
 
-            <FeaturedSongSection />
             <RecentArticlesSection />
         </>
     );
@@ -336,6 +232,7 @@ function FeaturedArticleSection() {
 const rootElement = document.getElementById("featured-article-root");
 
 if (rootElement) {
+    // Montamos React solo si existe el contenedor en la página.
     const root = ReactDOM.createRoot(rootElement);
     root.render(<FeaturedArticleSection />);
 }

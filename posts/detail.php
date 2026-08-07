@@ -17,6 +17,10 @@ $commentsEnabled = true;
 $likeMessage = '';
 $likesEnabled = true;
 
+/**
+ * Activamos el sistema de likes si la tabla está preparada.
+ * Si algo falla, el post sigue visible y solo se desactiva esa interacción.
+ */
 try {
     ctx_ensure_post_likes_table($pdo);
 } catch (Throwable $exception) {
@@ -62,6 +66,10 @@ if (
             $commentMessage = 'El comentario es demasiado largo.';
             $commentMessageType = 'error';
         } else {
+            /**
+             * Si se está respondiendo a otro comentario, comprobamos que sea
+             * un comentario principal. Así mantenemos la norma de un solo nivel.
+             */
             if ($parentCommentId !== null) {
                 $parentQuery = "
                     SELECT id, parent_comment_id
@@ -84,6 +92,7 @@ if (
             }
 
             if ($commentMessage === '') {
+                // Se consulta el dueño del post para poder avisarle después.
                 $postOwnerStmt = $pdo->prepare("SELECT user_id, title FROM posts WHERE id = ? LIMIT 1");
                 $postOwnerStmt->execute([$postId]);
                 $postOwner = $postOwnerStmt->fetch(PDO::FETCH_ASSOC);
@@ -107,6 +116,7 @@ if (
 
                 $newCommentId = (int) $pdo->lastInsertId();
 
+                // No enviamos notificación si una persona comenta en su propio post.
                 if ($postOwner && (int) $postOwner['user_id'] !== (int) $_SESSION['user_id']) {
                     ctx_create_notification(
                         $pdo,
@@ -148,6 +158,7 @@ if (
         $existingLikeStmt->execute([$postId, $likeUserId]);
         $existingLikeId = $existingLikeStmt->fetchColumn();
 
+        // El botón funciona como interruptor: si existe like lo quita, si no existe lo crea.
         if ($existingLikeId) {
             $deleteLikeStmt = $pdo->prepare("
                 DELETE FROM likes
@@ -208,6 +219,10 @@ $userHasLiked = $likesEnabled && isset($_SESSION['user_id'])
 $comments = [];
 $commentSetupHint = '';
 
+/**
+ * Cargamos comentarios después de validar el post.
+ * Se hace al final para evitar consultar comentarios de un post inexistente.
+ */
 if ($commentsEnabled) {
     try {
         $comments = ctx_fetch_post_comments($pdo, $postId);

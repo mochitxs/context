@@ -5,6 +5,10 @@ require_once '../includes/functions.php';
 
 $followsEnabled = true;
 
+/**
+ * Prepara el sistema de seguimiento de autores.
+ * Si no está disponible, el artículo se puede leer igualmente.
+ */
 try {
     ctx_ensure_user_follows_table($pdo);
 } catch (Throwable $exception) {
@@ -21,6 +25,10 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $articleId = (int) $_GET['id'];
 $followMessage = '';
 
+/**
+ * El formulario de seguir/dejar de seguir vive en el detalle del artículo
+ * porque ahí el usuario descubre directamente al autor.
+ */
 if (
     $followsEnabled &&
     $_SERVER['REQUEST_METHOD'] === 'POST' &&
@@ -33,6 +41,7 @@ if (
         $followedUserId = (int) ($_POST['followed_user_id'] ?? 0);
 
         if ($followedUserId > 0 && $followedUserId !== $followerUserId) {
+            // Igual que los likes, seguir funciona como interruptor.
             if (ctx_user_follows_author($pdo, $followerUserId, $followedUserId)) {
                 $deleteFollowStmt = $pdo->prepare("
                     DELETE FROM follows
@@ -46,6 +55,7 @@ if (
                 ");
                 $insertFollowStmt->execute([$followerUserId, $followedUserId]);
 
+                // Avisamos al autor cuando alguien nuevo empieza a seguirlo.
                 ctx_create_notification(
                     $pdo,
                     $followedUserId,
@@ -108,6 +118,9 @@ $viewerFollowsAuthor = $viewerCanFollowAuthor
 
 /**
  * Convierte saltos de línea en párrafos sencillos.
+ *
+ * @param string $text Contenido del artículo.
+ * @return string HTML seguro para mostrar en pantalla.
  */
 function renderContent(string $text): string
 {

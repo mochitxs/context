@@ -56,24 +56,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $title = trim($_POST["title"] ?? "");
     $categoryId = trim($_POST["category_id"] ?? "");
     $content = $_POST["content"] ?? "";
-$content = trim($content);
+    $content = trim($content);
 
-/**
- * Permitimos solo etiquetas básicas de formato
- */
-$content = strip_tags($content, '<b><strong><i><em><u><p><br><ul><ol><li><blockquote>');
+    /**
+     * Limpieza del contenido del editor.
+     * Permitimos formato básico, pero quitamos atributos que podrían ensuciar
+     * el HTML guardado o romper el estilo editorial de la página.
+     */
+    $content = strip_tags($content, '<b><strong><i><em><u><p><br><ul><ol><li><blockquote>');
 
-/**
- * Eliminamos atributos tipo data-start, data-end, etc.
- */
-$content = preg_replace('/\sdata-[a-zA-Z0-9_-]+="[^"]*"/i', '', $content);
-
-/**
- * Eliminamos atributos vacíos o innecesarios en etiquetas permitidas
- */
-$content = preg_replace('/\sclass="[^"]*"/i', '', $content);
-$content = preg_replace('/\sid="[^"]*"/i', '', $content);
-$content = preg_replace('/\sstyle="[^"]*"/i', '', $content);
+    $content = preg_replace('/\sdata-[a-zA-Z0-9_-]+="[^"]*"/i', '', $content);
+    $content = preg_replace('/\sclass="[^"]*"/i', '', $content);
+    $content = preg_replace('/\sid="[^"]*"/i', '', $content);
+    $content = preg_replace('/\sstyle="[^"]*"/i', '', $content);
 
     $coverImagePath = null;
 
@@ -285,6 +280,10 @@ $content = preg_replace('/\sstyle="[^"]*"/i', '', $content);
     const fileInput = document.getElementById("cover_image");
     const fileText = document.getElementById("file-upload-text");
 
+    /**
+     * Muestra el nombre del archivo elegido para que el usuario sepa
+     * qué imagen va a subir antes de publicar.
+     */
     fileInput.addEventListener("change", function () {
         if (this.files.length > 0) {
             fileText.textContent = this.files[0].name;
@@ -293,6 +292,12 @@ $content = preg_replace('/\sstyle="[^"]*"/i', '', $content);
         }
     });
 
+    /**
+     * Aplica formato básico dentro del editor visual.
+     *
+     * @param {string} command Comando de formato del navegador.
+     * @returns {void}
+     */
     function formatText(command) {
         document.execCommand(command, false, null);
         document.getElementById("editor").focus();
@@ -302,6 +307,10 @@ $content = preg_replace('/\sstyle="[^"]*"/i', '', $content);
     const editor = document.getElementById("editor");
     const hiddenContent = document.getElementById("hidden-content");
 
+    /**
+     * Antes de enviar, copiamos el contenido editable al input oculto
+     * para que PHP lo reciba como un campo normal del formulario.
+     */
     form.addEventListener("submit", function (e) {
         hiddenContent.value = editor.innerHTML.trim();
 

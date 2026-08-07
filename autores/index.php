@@ -5,6 +5,10 @@ require_once '../includes/functions.php';
 
 $followsEnabled = true;
 
+/**
+ * La página de autores también permite seguir/dejar de seguir.
+ * Si la tabla falla, se oculta esa acción pero se mantiene el listado.
+ */
 try {
     ctx_ensure_user_follows_table($pdo);
 } catch (Throwable $exception) {
@@ -13,6 +17,9 @@ try {
 
 $followMessage = '';
 
+/**
+ * Procesa el botón de seguir desde la página de autores.
+ */
 if (
     $followsEnabled &&
     $_SERVER['REQUEST_METHOD'] === 'POST' &&
@@ -25,6 +32,7 @@ if (
         $followedUserId = (int) ($_POST['followed_user_id'] ?? 0);
 
         if ($followedUserId > 0 && $followedUserId !== $followerUserId) {
+            // Un mismo botón alterna entre seguir y dejar de seguir.
             if (ctx_user_follows_author($pdo, $followerUserId, $followedUserId)) {
                 $deleteFollowStmt = $pdo->prepare("
                     DELETE FROM follows
@@ -38,6 +46,7 @@ if (
                 ");
                 $insertFollowStmt->execute([$followerUserId, $followedUserId]);
 
+                // La notificación refuerza la parte social de la plataforma.
                 ctx_create_notification(
                     $pdo,
                     $followedUserId,
@@ -55,6 +64,10 @@ if (
     }
 }
 
+/**
+ * Mostramos como autores tanto a usuarios con rol author como a quienes
+ * ya tengan artículos publicados. Así la sección no depende solo del rol.
+ */
 $stmt = $pdo->prepare("
     SELECT DISTINCT
         users.id,

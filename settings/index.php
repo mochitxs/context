@@ -22,6 +22,7 @@ $userId = (int) $_SESSION['user_id'];
 $activeView = $_GET['view'] ?? 'posts';
 $allowedViews = ['posts', 'articles', 'profile', 'comments', 'notifications'];
 
+// Evita que una vista inventada por URL rompa el panel.
 if (!in_array($activeView, $allowedViews, true)) {
     $activeView = 'posts';
 }
@@ -54,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     if ($action === 'upload_profile_image') {
+        // La imagen se guarda en uploads/profiles y en la BD queda solo la ruta.
         if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
             $tmpName = $_FILES['profile_image']['tmp_name'];
             $extension = strtolower(pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION));
@@ -95,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'update_profile_info') {
+        // La bio es opcional, así que puede guardarse vacía.
         $bio = trim($_POST['bio'] ?? '');
 
         $updateStmt = $pdo->prepare("
@@ -111,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'delete_post') {
+        // El borrado se limita al usuario conectado para evitar eliminar contenido ajeno.
         $targetId = (int) ($_POST['post_id'] ?? 0);
 
         if ($targetId > 0) {
@@ -128,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'delete_article') {
+        // Los artículos se borran desde la misma tabla posts, filtrando por type.
         $targetId = (int) ($_POST['post_id'] ?? 0);
 
         if ($targetId > 0) {
@@ -146,6 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 if ($activeView === 'notifications') {
+    // Al abrir notificaciones, se consideran leídas.
     $markReadStmt = $pdo->prepare("UPDATE notifications SET is_read = 1 WHERE user_id = ?");
     $markReadStmt->execute([$userId]);
 }
@@ -234,6 +240,7 @@ function renderOwnContentCards(array $items, string $type): void
     <link rel="stylesheet" href="../assets/css/section.css">
     <link rel="stylesheet" href="../assets/css/settings.css">
     <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+    <link rel="stylesheet" href="
 </head>
 <body class="section-page">
 

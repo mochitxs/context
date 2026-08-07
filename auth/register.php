@@ -10,6 +10,7 @@
  * - Comprobar si el email ya existe en la base de datos
  * - Generar un hash seguro de la contraseña
  * - Insertar el nuevo usuario en la tabla users
+ * - Iniciar sesión automáticamente tras el registro correcto
  */
 
 // Activamos la visualización de errores durante el desarrollo
@@ -19,8 +20,20 @@ error_reporting(E_ALL);
 // Incluimos la conexión a la base de datos
 require_once '../config/db.php';
 
+// Iniciamos la sesión para poder dejar al usuario conectado tras registrarse.
+session_start();
+
 // Variable para guardar mensajes de error o éxito
 $message = "";
+
+/**
+ * Si el usuario ya tiene sesión iniciada,
+ * no tiene sentido mostrarle el formulario de registro.
+ */
+if (isset($_SESSION["user_id"])) {
+    header("Location: ../index.php");
+    exit;
+}
 
 /**
  * Comprobamos si el formulario ha sido enviado.
@@ -79,8 +92,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ");
             $stmt->execute([$username, $email, $password_hash]);
 
-            header("Location: register.php?success=1");
-            exit;        }
+            /**
+             * Tras registrar el usuario, creamos la sesión con los mismos datos
+             * que usa login.php. Así la experiencia es más fluida: la persona
+             * entra directamente en CONTEXT sin tener que iniciar sesión otra vez.
+             */
+            $_SESSION["user_id"] = (int) $pdo->lastInsertId();
+            $_SESSION["username"] = $username;
+            $_SESSION["role"] = "user";
+
+            header("Location: ../index.php");
+            exit;
+        }
     }
 }
 ?>

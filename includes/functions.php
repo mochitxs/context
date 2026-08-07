@@ -131,10 +131,12 @@ function ctx_ensure_post_likes_table(PDO $pdo): void
     $likesTableExists = (bool) $pdo->query("SHOW TABLES LIKE 'likes'")->fetchColumn();
     $legacyLikesTableExists = (bool) $pdo->query("SHOW TABLES LIKE 'post_likes'")->fetchColumn();
 
+    // Conserva datos antiguos si la tabla se creó con el primer nombre usado.
     if (!$likesTableExists && $legacyLikesTableExists) {
         $pdo->exec("RENAME TABLE post_likes TO likes");
     }
 
+    // La clave única evita que un usuario pueda dar dos likes al mismo post.
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS likes (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -150,6 +152,7 @@ function ctx_ensure_post_likes_table(PDO $pdo): void
     $columnsStmt = $pdo->query("SHOW COLUMNS FROM likes");
     $columns = array_column($columnsStmt->fetchAll(PDO::FETCH_ASSOC), 'Field');
 
+    // Si la tabla existe pero no tiene las columnas esperadas, se avisa pronto.
     if (!in_array('post_id', $columns, true) || !in_array('user_id', $columns, true)) {
         throw new RuntimeException('La tabla likes no tiene la estructura esperada.');
     }
@@ -166,10 +169,12 @@ function ctx_ensure_user_follows_table(PDO $pdo): void
     $followsTableExists = (bool) $pdo->query("SHOW TABLES LIKE 'follows'")->fetchColumn();
     $legacyFollowsTableExists = (bool) $pdo->query("SHOW TABLES LIKE 'user_follows'")->fetchColumn();
 
+    // Mantiene compatibilidad con una versión anterior de la base de datos.
     if (!$followsTableExists && $legacyFollowsTableExists) {
         $pdo->exec("RENAME TABLE user_follows TO follows");
     }
 
+    // follower_user_id es quien sigue; followed_user_id es el autor seguido.
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS follows (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -375,6 +380,7 @@ function ctx_fetch_post_comments(PDO $pdo, int $postId): array
     $topLevel = [];
     $repliesByParent = [];
 
+    // Primero separamos comentarios principales y respuestas.
     foreach ($rows as $row) {
         $row['replies'] = [];
 
@@ -386,6 +392,7 @@ function ctx_fetch_post_comments(PDO $pdo, int $postId): array
         $repliesByParent[(int) $row['parent_comment_id']][] = $row;
     }
 
+    // Después colocamos cada respuesta dentro de su comentario principal.
     foreach ($repliesByParent as $parentId => $replies) {
         if (isset($topLevel[$parentId])) {
             $topLevel[$parentId]['replies'] = $replies;
@@ -419,6 +426,7 @@ function ctx_ensure_user_profile_column(PDO $pdo): void
  */
 function ctx_ensure_notifications_table(PDO $pdo): void
 {
+    // Las notificaciones guardan eventos simples: follows, comentarios, etc.
     $sql = "
         CREATE TABLE IF NOT EXISTS notifications (
             id INT AUTO_INCREMENT PRIMARY KEY,
