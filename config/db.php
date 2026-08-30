@@ -4,10 +4,28 @@
  *
  * Se prueban varias configuraciones habituales de XAMPP/local para evitar
  * que la app dependa exclusivamente del socket de `localhost`.
+ *
+ * Las credenciales se leen de variables de entorno (definidas en `.env`
+ * localmente, o en la configuración del hosting en producción). Si no
+ * existen, se usan los valores por defecto de XAMPP para desarrollo local.
  */
-$dbname = 'context_db';
-$username = 'root';
-$password = '';
+
+// Cargamos el .env si existe (solo en local; en producción el hosting
+// suele inyectar las variables de entorno directamente).
+$envPath = __DIR__ . '/../.env';
+if (file_exists($envPath)) {
+    foreach (file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        if (str_starts_with(trim($line), '#') || !str_contains($line, '=')) {
+            continue;
+        }
+        [$key, $value] = explode('=', $line, 2);
+        putenv(trim($key) . '=' . trim($value));
+    }
+}
+
+$dbname   = getenv('DB_NAME') ?: 'context_db';
+$username = getenv('DB_USER') ?: 'root';
+$password = getenv('DB_PASS') ?: '';
 
 $dsnCandidates = [
     "mysql:host=localhost;dbname=$dbname;charset=utf8mb4",
