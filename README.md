@@ -61,4 +61,4 @@ Proyecto final de ciclo (DAW), desarrollado de principio a fin: investigación, 
 
 ## Autora
 
-Àgata — [LinkedIn] · [portfolio]
+Àgata Jiménez　༘⋆✧
