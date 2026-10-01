@@ -1,64 +1,70 @@
 # context;
 
-Revista digital interactiva pensada como un espacio más reflexivo frente al contenido rápido y sobreestimulante de redes sociales. Combina la profundidad de una publicación editorial con participación activa de comunidad.
+Revista digital interactiva pensada como un espacio más reflexivo frente al contenido rápido y sobreestimulante de las redes sociales. Combina contenido editorial con participación activa de la comunidad.
 
-Proyecto final de ciclo (DAW), desarrollado de principio a fin: investigación, diseño UX/UI, backend, base de datos y testing.
+Proyecto final del ciclo de **Desarrollo de Aplicaciones Web**, creado de principio a fin: investigación, diseño UX/UI, frontend, backend, base de datos y despliegue.
+
+🌐 **Demo:** https://agugu.site.je/index.php
+
+> La demo utiliza un hosting gratuito, por lo que la primera carga puede tardar unos segundos.
 
 ## Características
 
-- **Autenticación y roles** — registro/login con contraseñas hasheadas, sesiones, permisos por rol (visitante, usuario, autor, administrador)
-- **Contenido** — artículos y posts con CRUD completo, categorías (arte y cultura, moda y música, sociedad y opinión), subida de imágenes
-- **Comunidad** — comentarios con respuestas, likes, sistema de follows entre usuarios, notificaciones
-- **Exploración** — sección de descubrimiento de contenido y autores
+- Registro, inicio de sesión y gestión de roles.
+- Publicación de posts y artículos.
+- Categorías editoriales.
+- Comentarios, respuestas y likes.
+- Seguimiento de autores.
+- Sistema de notificaciones.
+- Solicitudes para convertirse en autor.
+- Subida de imágenes y personalización del perfil.
+- Diseño responsive para ordenadores y móviles.
 
-## Stack técnico
+## Tecnologías
 
-`HTML` · `CSS` · `JavaScript` · `React` (secciones puntuales) · `Tailwind CSS` · `PHP` · `MySQL`
+`HTML` · `CSS` · `JavaScript` · `React` · `Tailwind CSS` · `PHP` · `MySQL`
 
-## Cómo instalarlo en local
+## Instalación local
 
-### Requisitos
+### 1. Clonar el repositorio
 
-- PHP 8+
-- MySQL / MariaDB
-- Servidor local tipo XAMPP, MAMP o el servidor integrado de PHP
+```bash
+git clone https://github.com/mochitxs/context.git
+cd context
+```
 
-### Pasos
+### 2. Crear la base de datos
 
-1. **Clona el repositorio**
-   ```bash
-   git clone https://github.com/mochitxs/context.git
-   cd context
-   ```
+Crea una base de datos llamada `context_db` e importa `context_db.sql`:
 
-2. **Crea la base de datos**
+```bash
+mysql -u root -p context_db < context_db.sql
+```
 
-   Crea una base de datos llamada `context_db` e impórtale el dump incluido:
-   ```bash
-   mysql -u root -p context_db < context_db.sql
-   ```
+También puedes importar el archivo desde phpMyAdmin.
 
-3. **Configura las variables de entorno**
+### 3. Configurar el entorno
 
-   Copia la plantilla y ajusta los valores si tu configuración de MySQL no es la de por defecto:
-   ```bash
-   cp .env.example .env
-   ```
+Copia el archivo de ejemplo:
 
-4. **Levanta el servidor**
+```bash
+cp .env.example .env
+```
 
-   Con el servidor integrado de PHP, desde la raíz del proyecto:
-   ```bash
-   php -S localhost:8000
-   ```
-   O sirve la carpeta `context/` desde `htdocs` si usas XAMPP.
+Completa en `.env` los datos de conexión con MySQL.
 
-5. Abre `http://localhost:8000` (o la URL que corresponda) en el navegador.
+### 4. Iniciar la aplicación
+
+```bash
+php -S localhost:8000
+```
+
+Abre http://localhost:8000 en el navegador.
 
 ## Estado
 
-🟢 Disponible en local · Despliegue en producción en progreso
+🟢 Proyecto desplegado y disponible online.
 
 ## Autora
 
-Àgata Jiménez　༘⋆✧
+**Àgata Jiménez** ༘⋆✧
